@@ -1,0 +1,283 @@
+version: '3.8'
+
+services:
+  # Databases
+  postgres-product:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: product_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_product_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-inventory:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_inventory_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-order:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_order_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-customer:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: customer_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_customer_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-reporting:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: reporting_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_reporting_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-alert:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: alert_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_alert_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - warehouse-network
+
+  # Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - warehouse-network
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - JWT_SECRET=your-secret-key
+      - PRODUCT_SERVICE_URL=http://product-service:3001
+      - INVENTORY_SERVICE_URL=http://inventory-service:3002
+      - ORDER_SERVICE_URL=http://order-service:3003
+      - CUSTOMER_SERVICE_URL=http://customer-service:3004
+      - REPORTING_SERVICE_URL=http://reporting-service:3005
+      - ALERT_SERVICE_URL=http://alert-service:3006
+    depends_on:
+      - product-service
+      - inventory-service
+      - order-service
+      - customer-service
+      - reporting-service
+      - alert-service
+    networks:
+      - warehouse-network
+
+  # Microservices
+  product-service:
+    build:
+      context: .
+      dockerfile: services/product-service/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DB_HOST=postgres-product
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=product_db
+      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+    depends_on:
+      - postgres-product
+      - rabbitmq
+    networks:
+      - warehouse-network
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: services/inventory-service/Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - DB_HOST=postgres-inventory
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=inventory_db
+      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres-inventory
+      - rabbitmq
+      - redis
+    networks:
+      - warehouse-network
+
+  order-service:
+    build:
+      context: .
+      dockerfile: services/order-service/Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DB_HOST=postgres-order
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=order_db
+      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+      - INVENTORY_SERVICE_URL=http://inventory-service:3002
+      - CUSTOMER_SERVICE_URL=http://customer-service:3004
+    depends_on:
+      - postgres-order
+      - rabbitmq
+      - inventory-service
+      - customer-service
+    networks:
+      - warehouse-network
+
+  customer-service:
+    build:
+      context: .
+      dockerfile: services/customer-service/Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - DB_HOST=postgres-customer
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=customer_db
+      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+    depends_on:
+      - postgres-customer
+      - rabbitmq
+    networks:
+      - warehouse-network
+
+  reporting-service:
+    build:
+      context: .
+      dockerfile: services/reporting-service/Dockerfile
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+      - DB_HOST=postgres-reporting
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=reporting_db
+      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+    depends_on:
+      - postgres-reporting
+      - rabbitmq
+    networks:
+      - warehouse-network
+
+  alert-service:
+    build:
+      context: .
+      dockerfile: services/alert-service/Dockerfile
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=development
+      - PORT=3006
+      - DB_HOST=postgres-alert
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=alert_db
+      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=your-email@gmail.com
+      - SMTP_PASS=your-app-password
+    depends_on:
+      - postgres-alert
+      - rabbitmq
+    networks:
+      - warehouse-network
+
+volumes:
+  postgres_product_data:
+  postgres_inventory_data:
+  postgres_order_data:
+  postgres_customer_data:
+  postgres_reporting_data:
+  postgres_alert_data:
+  rabbitmq_data:
+  redis_data:
+
+networks:
+  warehouse-network:
+    driver: bridge
