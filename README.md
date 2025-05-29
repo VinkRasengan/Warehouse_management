@@ -30,7 +30,7 @@ This system follows a microservices architecture with the following services:
 
 ## Project Structure
 
-```
+```text
 warehouse-management/
 ├── api-gateway-dotnet/       # API Gateway with Ocelot
 ├── services/
@@ -58,52 +58,58 @@ warehouse-management/
 ### Quick Start
 
 1. Clone the repository:
-```bash
-git clone <repository-url>
-cd warehouse-management
-```
+
+   ```bash
+   git clone <repository-url>
+   cd warehouse-management
+   ```
 
 2. Start all services with Docker Compose:
-```bash
-docker-compose up -d --build
-```
+
+   ```bash
+   docker-compose up -d --build
+   ```
 
 3. Access the services:
-- **API Gateway**: http://localhost:5000 (HTTP) / https://localhost:5001 (HTTPS)
-- **Product Service**: http://localhost:5101
-- **Inventory Service**: http://localhost:5102
-- **Order Service**: http://localhost:5103
-- **Customer Service**: http://localhost:5104
-- **Reporting Service**: http://localhost:5105
-- **Alert Service**: http://localhost:5106
+
+   - **API Gateway**: <http://localhost:5000> (HTTP) / <https://localhost:5001> (HTTPS)
+   - **Product Service**: <http://localhost:5101>
+   - **Inventory Service**: <http://localhost:5102>
+   - **Order Service**: <http://localhost:5103>
+   - **Customer Service**: <http://localhost:5104>
+   - **Reporting Service**: <http://localhost:5105>
+   - **Alert Service**: <http://localhost:5106>
 
 ### Authentication
 
 To access protected endpoints, you need to authenticate:
 
 1. **Login** to get JWT token:
-```bash
-curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "password"}'
-```
+
+   ```bash
+   curl -X POST http://localhost:5000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username": "admin", "password": "password"}'
+   ```
 
 2. **Use the token** in subsequent requests:
-```bash
-curl -X GET http://localhost:5000/api/products \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-```
+
+   ```bash
+   curl -X GET http://localhost:5000/api/products \
+     -H "Authorization: Bearer YOUR_JWT_TOKEN"
+   ```
 
 ### API Documentation
 
 Each service provides Swagger documentation:
-- API Gateway: http://localhost:5000/swagger
-- Product Service: http://localhost:5101/swagger
-- Inventory Service: http://localhost:5102/swagger
-- Order Service: http://localhost:5103/swagger
-- Customer Service: http://localhost:5104/swagger
-- Reporting Service: http://localhost:5105/swagger
-- Alert Service: http://localhost:5106/swagger
+
+- API Gateway: <http://localhost:5000/swagger>
+- Product Service: <http://localhost:5101/swagger>
+- Inventory Service: <http://localhost:5102/swagger>
+- Order Service: <http://localhost:5103/swagger>
+- Customer Service: <http://localhost:5104/swagger>
+- Reporting Service: <http://localhost:5105/swagger>
+- Alert Service: <http://localhost:5106/swagger>
 
 ## Development
 
@@ -112,18 +118,20 @@ Each service provides Swagger documentation:
 1. **Install .NET 8.0 SDK**
 
 2. **Restore packages** for each service:
-```bash
-# For each service directory
-dotnet restore
-```
+
+   ```bash
+   # For each service directory
+   dotnet restore
+   ```
 
 3. **Set up environment variables** (update appsettings.Development.json in each service)
 
 4. **Run services individually**:
-```bash
-# In each service directory
-dotnet run
-```
+
+   ```bash
+   # In each service directory
+   dotnet run
+   ```
 
 ### Database Migrations
 

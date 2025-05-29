@@ -5,12 +5,14 @@ This guide covers deployment options for the Warehouse Management System built w
 ## Prerequisites
 
 ### Local Development
+
 - .NET 8.0 SDK
 - Docker & Docker Compose
 - PostgreSQL (optional, can use Docker)
 - RabbitMQ (optional, can use Docker)
 
 ### Production
+
 - Kubernetes cluster
 - Docker registry access
 - PostgreSQL databases
@@ -220,6 +222,7 @@ kubectl port-forward service/api-gateway 3000:3000 -n warehouse-management
 ### Monitoring & Observability
 
 1. **Metrics**
+
    ```bash
    # Deploy Prometheus and Grafana
    kubectl apply -f infra/monitoring/prometheus.yaml
@@ -227,6 +230,7 @@ kubectl port-forward service/api-gateway 3000:3000 -n warehouse-management
    ```
 
 2. **Logging**
+
    ```bash
    # Deploy ELK stack
    kubectl apply -f infra/logging/elasticsearch.yaml
@@ -235,6 +239,7 @@ kubectl port-forward service/api-gateway 3000:3000 -n warehouse-management
    ```
 
 3. **Tracing**
+
    ```bash
    # Deploy Jaeger
    kubectl apply -f infra/tracing/jaeger.yaml
@@ -279,18 +284,21 @@ kubectl port-forward service/api-gateway 3000:3000 -n warehouse-management
 ### Common Issues
 
 1. **Service Discovery**
+
    ```bash
    # Check DNS resolution
    kubectl exec -it <pod> -- nslookup product-service
    ```
 
 2. **Database Connections**
+
    ```bash
    # Check database connectivity
    kubectl exec -it <pod> -- pg_isready -h postgres-product -p 5432
    ```
 
 3. **Message Queue**
+
    ```bash
    # Check RabbitMQ status
    kubectl exec -it rabbitmq-0 -- rabbitmqctl status
@@ -299,17 +307,20 @@ kubectl port-forward service/api-gateway 3000:3000 -n warehouse-management
 ### Debugging
 
 1. **View Logs**
+
    ```bash
    kubectl logs -f deployment/api-gateway -n warehouse-management
    kubectl logs -f deployment/product-service -n warehouse-management
    ```
 
 2. **Check Events**
+
    ```bash
    kubectl get events -n warehouse-management --sort-by='.lastTimestamp'
    ```
 
 3. **Describe Resources**
+
    ```bash
    kubectl describe pod <pod-name> -n warehouse-management
    kubectl describe service <service-name> -n warehouse-management

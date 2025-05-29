@@ -8,6 +8,7 @@
 ## 🏃‍♂️ Quick Start (5 minutes)
 
 ### 1. Clone and Start
+
 ```bash
 git clone <repository-url>
 cd warehouse-management
@@ -17,6 +18,7 @@ docker-compose up -d --build
 ```
 
 ### 2. Wait for Services to Start
+
 ```bash
 # Check if all services are running
 docker-compose ps
@@ -26,6 +28,7 @@ docker-compose logs -f
 ```
 
 ### 3. Test the System
+
 ```bash
 # Make the test script executable
 chmod +x scripts/test-api.sh
@@ -38,17 +41,18 @@ chmod +x scripts/test-api.sh
 
 | Service | URL | Swagger |
 |---------|-----|---------|
-| **API Gateway** | http://localhost:5000 | http://localhost:5000/swagger |
-| **Product Service** | http://localhost:5101 | http://localhost:5101/swagger |
-| **Inventory Service** | http://localhost:5102 | http://localhost:5102/swagger |
-| **Order Service** | http://localhost:5103 | http://localhost:5103/swagger |
-| **Customer Service** | http://localhost:5104 | http://localhost:5104/swagger |
-| **Reporting Service** | http://localhost:5105 | http://localhost:5105/swagger |
-| **Alert Service** | http://localhost:5106 | http://localhost:5106/swagger |
+| **API Gateway** | <http://localhost:5000> | <http://localhost:5000/swagger> |
+| **Product Service** | <http://localhost:5101> | <http://localhost:5101/swagger> |
+| **Inventory Service** | <http://localhost:5102> | <http://localhost:5102/swagger> |
+| **Order Service** | <http://localhost:5103> | <http://localhost:5103/swagger> |
+| **Customer Service** | <http://localhost:5104> | <http://localhost:5104/swagger> |
+| **Reporting Service** | <http://localhost:5105> | <http://localhost:5105/swagger> |
+| **Alert Service** | <http://localhost:5106> | <http://localhost:5106/swagger> |
 
 ## 🔐 Authentication
 
 ### Get JWT Token
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -56,6 +60,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 ```
 
 ### Use Token in Requests
+
 ```bash
 # Replace YOUR_JWT_TOKEN with the actual token
 curl -X GET http://localhost:5000/api/products \
@@ -65,6 +70,7 @@ curl -X GET http://localhost:5000/api/products \
 ## 📝 Basic API Examples
 
 ### 1. Create a Product
+
 ```bash
 curl -X POST http://localhost:5000/api/products \
   -H "Content-Type: application/json" \
@@ -79,12 +85,14 @@ curl -X POST http://localhost:5000/api/products \
 ```
 
 ### 2. Get All Products
+
 ```bash
 curl -X GET http://localhost:5000/api/products \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### 3. Create a Customer
+
 ```bash
 curl -X POST http://localhost:5000/api/customers \
   -H "Content-Type: application/json" \
@@ -102,6 +110,7 @@ curl -X POST http://localhost:5000/api/customers \
 ```
 
 ### 4. Create an Order
+
 ```bash
 curl -X POST http://localhost:5000/api/orders \
   -H "Content-Type: application/json" \
@@ -128,6 +137,7 @@ curl -X POST http://localhost:5000/api/orders \
 ## 🔍 Health Checks
 
 Check if all services are healthy:
+
 ```bash
 curl http://localhost:5000/health  # API Gateway
 curl http://localhost:5101/health  # Product Service
@@ -141,6 +151,7 @@ curl http://localhost:5106/health  # Alert Service
 ## 🛠️ Development
 
 ### Run Individual Services Locally
+
 ```bash
 # Start infrastructure first
 docker-compose up -d postgres-product postgres-inventory postgres-order postgres-customer postgres-reporting postgres-alert rabbitmq redis
@@ -155,6 +166,7 @@ cd services/product-service && dotnet run
 ```
 
 ### Database Migrations
+
 ```bash
 # For each service with Entity Framework
 cd services/product-service && dotnet ef database update
@@ -168,6 +180,7 @@ cd services/alert-service && dotnet ef database update
 ## 🐛 Troubleshooting
 
 ### Check Service Logs
+
 ```bash
 # View logs for all services
 docker-compose logs
@@ -178,6 +191,7 @@ docker-compose logs product-service
 ```
 
 ### Restart Services
+
 ```bash
 # Restart all services
 docker-compose restart
@@ -187,6 +201,7 @@ docker-compose restart api-gateway
 ```
 
 ### Clean Start
+
 ```bash
 # Stop and remove all containers
 docker-compose down
@@ -201,11 +216,13 @@ docker-compose up -d --build
 ## 📊 Monitoring
 
 ### RabbitMQ Management
-- URL: http://localhost:15672
+
+- URL: <http://localhost:15672>
 - Username: admin
 - Password: password
 
 ### Database Connections
+
 - PostgreSQL services run on ports 5432-5437
 - Default credentials: postgres/password
 
@@ -220,6 +237,7 @@ docker-compose up -d --build
 ## 🆘 Support
 
 If you encounter any issues:
+
 1. Check the logs: `docker-compose logs`
 2. Verify all services are running: `docker-compose ps`
 3. Test individual endpoints with the provided curl commands
