@@ -23,13 +23,14 @@ builder.Services.AddSwaggerGen();
 
 // Configure Entity Framework
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine($"Connection String: {connectionString}");
 builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Configure JWT Authentication
-var jwtSecret = builder.Configuration["JWT__Secret"] ?? "your-jwt-secret-key-here-make-it-long-and-secure";
-var jwtIssuer = builder.Configuration["JWT__Issuer"] ?? "WarehouseManagement";
-var jwtAudience = builder.Configuration["JWT__Audience"] ?? "WarehouseManagement";
+var jwtSecret = builder.Configuration["JWT:Key"] ?? "your-super-secret-key-that-is-at-least-32-characters-long";
+var jwtIssuer = builder.Configuration["JWT:Issuer"] ?? "WarehouseManagement";
+var jwtAudience = builder.Configuration["JWT:Audience"] ?? "WarehouseManagement";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -54,6 +55,13 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Add custom services
 builder.Services.AddScoped<IProductService, ProductService.Services.ProductService>();
 builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
+
+// Add health checks
+var healthChecksBuilder = builder.Services.AddHealthChecks();
+if (!string.IsNullOrEmpty(connectionString))
+{
+    healthChecksBuilder.AddNpgSql(connectionString);
+}
 
 // Add CORS
 builder.Services.AddCors(options =>
@@ -80,6 +88,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 // Ensure database is created
 using (var scope = app.Services.CreateScope())

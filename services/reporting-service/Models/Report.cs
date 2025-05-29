@@ -48,3 +48,41 @@ public static class ReportStatus
     public const string COMPLETED = "COMPLETED";
     public const string FAILED = "FAILED";
 }
+
+public class ReportSchedule
+{
+    public int Id { get; set; }
+
+    [Required]
+    [StringLength(200)]
+    public string Name { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(50)]
+    public string ReportType { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(100)]
+    public string CronExpression { get; set; } = string.Empty;
+
+    public string Parameters { get; set; } = string.Empty;
+
+    public string Recipients { get; set; } = string.Empty;
+
+    public bool IsActive { get; set; } = true;
+
+    public DateTime? NextRunTime { get; set; }
+
+    public DateTime? LastRunTime { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime? UpdatedAt { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string CreatedBy { get; set; } = string.Empty;
+
+    [StringLength(100)]
+    public string? UpdatedBy { get; set; }
+}

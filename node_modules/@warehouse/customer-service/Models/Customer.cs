@@ -42,7 +42,10 @@ public class Customer
     public bool IsActive { get; set; } = true;
     
     public int LoyaltyPoints { get; set; } = 0;
-    
+
+    [StringLength(20)]
+    public string LoyaltyTier { get; set; } = "Bronze";
+
     [StringLength(20)]
     public string CustomerType { get; set; } = CustomerTypes.REGULAR;
     

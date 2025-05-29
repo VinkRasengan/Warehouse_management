@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "vHk3sxVrCP2mWwiNReTpgW5eiSAfgHVQCRn/1M7F0lU=",
+  "Source": "AlertService",
+  "BasePath": "_content/AlertService",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

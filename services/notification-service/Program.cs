@@ -72,6 +72,9 @@ builder.Services.AddAuthorization();
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+// Add HttpClient
+builder.Services.AddHttpClient();
+
 // Add custom services
 builder.Services.AddScoped<INotificationService, NotificationService.Services.NotificationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -81,7 +84,7 @@ builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 // Add health checks
 builder.Services.AddHealthChecks()
-    .AddDbContext<NotificationDbContext>();
+    .AddNpgSql(connectionString);
 
 // Add CORS
 builder.Services.AddCors(options =>

@@ -85,7 +85,7 @@ builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 // Add health checks
 builder.Services.AddHealthChecks()
-    .AddDbContext<InventoryDbContext>()
+    .AddNpgSql(connectionString)
     .AddRedis(redisConnectionString);
 
 // Add CORS

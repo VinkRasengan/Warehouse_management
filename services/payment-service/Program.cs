@@ -72,6 +72,9 @@ builder.Services.AddAuthorization();
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+// Add HttpClient
+builder.Services.AddHttpClient();
+
 // Add custom services
 builder.Services.AddScoped<IPaymentService, PaymentService.Services.PaymentService>();
 builder.Services.AddScoped<IPaymentProviderService, PaymentProviderService>();
@@ -79,7 +82,7 @@ builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 // Add health checks
 builder.Services.AddHealthChecks()
-    .AddDbContext<PaymentDbContext>();
+    .AddNpgSql(connectionString);
 
 // Add CORS
 builder.Services.AddCors(options =>
