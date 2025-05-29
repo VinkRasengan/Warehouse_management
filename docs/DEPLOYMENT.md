@@ -1,9 +1,11 @@
-# Deployment Guide
+# Deployment Guide - ASP.NET Core Microservices
+
+This guide covers deployment options for the Warehouse Management System built with ASP.NET Core.
 
 ## Prerequisites
 
 ### Local Development
-- Node.js 18+
+- .NET 8.0 SDK
 - Docker & Docker Compose
 - PostgreSQL (optional, can use Docker)
 - RabbitMQ (optional, can use Docker)
@@ -17,20 +19,40 @@
 
 ## Local Development Setup
 
-### 1. Clone and Install Dependencies
+### 1. Clone and Restore Dependencies
 
 ```bash
 git clone <repository-url>
 cd warehouse-management
-npm install
-npm run install:all
+
+# Restore packages for all services
+dotnet restore api-gateway-dotnet/ApiGateway.csproj
+dotnet restore services/product-service/ProductService.csproj
+dotnet restore services/inventory-service/InventoryService.csproj
+dotnet restore services/order-service/OrderService.csproj
+dotnet restore services/customer-service/CustomerService.csproj
+dotnet restore services/reporting-service/ReportingService.csproj
+dotnet restore services/alert-service/AlertService.csproj
 ```
 
 ### 2. Environment Configuration
 
-```bash
-cp .env.example .env
-# Edit .env with your configuration
+Update `appsettings.Development.json` in each service with your configuration:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=service_db;Username=postgres;Password=password"
+  },
+  "JWT": {
+    "Secret": "your-jwt-secret-key-here-make-it-long-and-secure",
+    "Issuer": "WarehouseManagement",
+    "Audience": "WarehouseManagement"
+  },
+  "RabbitMQ": {
+    "ConnectionString": "amqp://admin:password@localhost:5672"
+  }
+}
 ```
 
 ### 3. Start Infrastructure Services
@@ -40,36 +62,46 @@ cp .env.example .env
 docker-compose up -d postgres-product postgres-inventory postgres-order postgres-customer postgres-reporting postgres-alert rabbitmq redis
 ```
 
-### 4. Build Shared Libraries
+### 4. Run Database Migrations
 
 ```bash
-cd shared/types && npm run build
-cd ../utils && npm run build
+# For each service that uses Entity Framework
+cd services/product-service && dotnet ef database update
+cd ../inventory-service && dotnet ef database update
+cd ../order-service && dotnet ef database update
+cd ../customer-service && dotnet ef database update
+cd ../reporting-service && dotnet ef database update
+cd ../alert-service && dotnet ef database update
 ```
 
 ### 5. Start Services
 
 ```bash
-# Start all services in development mode
-npm run dev
+# Start API Gateway
+cd api-gateway-dotnet && dotnet run
 
-# Or start individual services
-npm run dev:gateway
-npm run dev:product
-npm run dev:inventory
-# ... etc
+# Start individual services (in separate terminals)
+cd services/product-service && dotnet run
+cd services/inventory-service && dotnet run
+cd services/order-service && dotnet run
+cd services/customer-service && dotnet run
+cd services/reporting-service && dotnet run
+cd services/alert-service && dotnet run
 ```
 
 ### 6. Verify Setup
 
 ```bash
 # Check API Gateway
-curl http://localhost:3000/health
+curl http://localhost:5000/health
 
 # Check individual services
-curl http://localhost:3001/health  # Product Service
-curl http://localhost:3002/health  # Inventory Service
-# ... etc
+curl http://localhost:5101/health  # Product Service
+curl http://localhost:5102/health  # Inventory Service
+curl http://localhost:5103/health  # Order Service
+curl http://localhost:5104/health  # Customer Service
+curl http://localhost:5105/health  # Reporting Service
+curl http://localhost:5106/health  # Alert Service
 ```
 
 ## Docker Deployment

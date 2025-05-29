@@ -104,23 +104,20 @@ services:
     networks:
       - warehouse-network
 
-  # API Gateway
+  # API Gateway (ASP.NET Core with Ocelot)
   api-gateway:
     build:
       context: .
-      dockerfile: api-gateway/Dockerfile
+      dockerfile: api-gateway-dotnet/Dockerfile
     ports:
-      - "3000:3000"
+      - "5000:80"
+      - "5001:443"
     environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - JWT_SECRET=your-secret-key
-      - PRODUCT_SERVICE_URL=http://product-service:3001
-      - INVENTORY_SERVICE_URL=http://inventory-service:3002
-      - ORDER_SERVICE_URL=http://order-service:3003
-      - CUSTOMER_SERVICE_URL=http://customer-service:3004
-      - REPORTING_SERVICE_URL=http://reporting-service:3005
-      - ALERT_SERVICE_URL=http://alert-service:3006
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - JWT_SECRET=your-jwt-secret-key-here-make-it-long-and-secure
+      - JWT_ISSUER=WarehouseManagement
+      - JWT_AUDIENCE=WarehouseManagement
     depends_on:
       - product-service
       - inventory-service
@@ -131,22 +128,21 @@ services:
     networks:
       - warehouse-network
 
-  # Microservices
+  # Microservices (ASP.NET Core)
   product-service:
     build:
       context: .
       dockerfile: services/product-service/Dockerfile
     ports:
-      - "3001:3001"
+      - "5101:80"
     environment:
-      - NODE_ENV=development
-      - PORT=3001
-      - DB_HOST=postgres-product
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=password
-      - DB_NAME=product_db
-      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-product;Port=5432;Database=product_db;Username=postgres;Password=password
+      - RabbitMQ__ConnectionString=amqp://admin:password@rabbitmq:5672
+      - JWT__Secret=your-jwt-secret-key-here-make-it-long-and-secure
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
     depends_on:
       - postgres-product
       - rabbitmq
@@ -158,17 +154,16 @@ services:
       context: .
       dockerfile: services/inventory-service/Dockerfile
     ports:
-      - "3002:3002"
+      - "5102:80"
     environment:
-      - NODE_ENV=development
-      - PORT=3002
-      - DB_HOST=postgres-inventory
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=password
-      - DB_NAME=inventory_db
-      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
-      - REDIS_URL=redis://redis:6379
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-inventory;Port=5432;Database=inventory_db;Username=postgres;Password=password
+      - RabbitMQ__ConnectionString=amqp://admin:password@rabbitmq:5672
+      - Redis__ConnectionString=redis:6379
+      - JWT__Secret=your-jwt-secret-key-here-make-it-long-and-secure
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
     depends_on:
       - postgres-inventory
       - rabbitmq
@@ -181,23 +176,18 @@ services:
       context: .
       dockerfile: services/order-service/Dockerfile
     ports:
-      - "3003:3003"
+      - "5103:80"
     environment:
-      - NODE_ENV=development
-      - PORT=3003
-      - DB_HOST=postgres-order
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=password
-      - DB_NAME=order_db
-      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
-      - INVENTORY_SERVICE_URL=http://inventory-service:3002
-      - CUSTOMER_SERVICE_URL=http://customer-service:3004
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-order;Port=5432;Database=order_db;Username=postgres;Password=password
+      - RabbitMQ__ConnectionString=amqp://admin:password@rabbitmq:5672
+      - JWT__Secret=your-jwt-secret-key-here-make-it-long-and-secure
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
     depends_on:
       - postgres-order
       - rabbitmq
-      - inventory-service
-      - customer-service
     networks:
       - warehouse-network
 
@@ -206,16 +196,15 @@ services:
       context: .
       dockerfile: services/customer-service/Dockerfile
     ports:
-      - "3004:3004"
+      - "5104:80"
     environment:
-      - NODE_ENV=development
-      - PORT=3004
-      - DB_HOST=postgres-customer
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=password
-      - DB_NAME=customer_db
-      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-customer;Port=5432;Database=customer_db;Username=postgres;Password=password
+      - RabbitMQ__ConnectionString=amqp://admin:password@rabbitmq:5672
+      - JWT__Secret=your-jwt-secret-key-here-make-it-long-and-secure
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
     depends_on:
       - postgres-customer
       - rabbitmq
@@ -227,16 +216,15 @@ services:
       context: .
       dockerfile: services/reporting-service/Dockerfile
     ports:
-      - "3005:3005"
+      - "5105:80"
     environment:
-      - NODE_ENV=development
-      - PORT=3005
-      - DB_HOST=postgres-reporting
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=password
-      - DB_NAME=reporting_db
-      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-reporting;Port=5432;Database=reporting_db;Username=postgres;Password=password
+      - RabbitMQ__ConnectionString=amqp://admin:password@rabbitmq:5672
+      - JWT__Secret=your-jwt-secret-key-here-make-it-long-and-secure
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
     depends_on:
       - postgres-reporting
       - rabbitmq
@@ -248,20 +236,19 @@ services:
       context: .
       dockerfile: services/alert-service/Dockerfile
     ports:
-      - "3006:3006"
+      - "5106:80"
     environment:
-      - NODE_ENV=development
-      - PORT=3006
-      - DB_HOST=postgres-alert
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=password
-      - DB_NAME=alert_db
-      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
-      - SMTP_HOST=smtp.gmail.com
-      - SMTP_PORT=587
-      - SMTP_USER=your-email@gmail.com
-      - SMTP_PASS=your-app-password
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-alert;Port=5432;Database=alert_db;Username=postgres;Password=password
+      - RabbitMQ__ConnectionString=amqp://admin:password@rabbitmq:5672
+      - SMTP__Host=smtp.gmail.com
+      - SMTP__Port=587
+      - SMTP__Username=your-email@gmail.com
+      - SMTP__Password=your-app-password
+      - JWT__Secret=your-jwt-secret-key-here-make-it-long-and-secure
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
     depends_on:
       - postgres-alert
       - rabbitmq
