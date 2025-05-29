@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5004/api';
+const API_BASE_URL = process.env.REACT_APP_USER_SERVICE_URL || 'http://localhost:5100/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -41,25 +41,22 @@ const authService = {
   // Login user
   login: async (credentials) => {
     try {
-      // For demo purposes, simulate login
-      if (credentials.email === 'admin@warehouse.com' && credentials.password === 'admin123') {
-        const mockResponse = {
-          token: 'mock-jwt-token-' + Date.now(),
-          user: {
-            id: 1,
-            email: 'admin@warehouse.com',
-            name: 'Quản trị viên',
-            role: 'admin',
-            avatar: null,
-            permissions: ['all']
-          }
-        };
-        return mockResponse;
-      } else {
-        throw new Error('Email hoặc mật khẩu không đúng');
+      const response = await api.post('/auth/login', credentials);
+
+      if (response.data.token && response.data.user) {
+        // Store in localStorage
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        return response.data;
       }
+
+      throw new Error('Invalid response from server');
     } catch (error) {
-      throw new Error(error.message || 'Đăng nhập thất bại');
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error('Đăng nhập thất bại. Vui lòng thử lại.');
     }
   },
 
@@ -76,19 +73,10 @@ const authService = {
   // Verify token
   verifyToken: async (token) => {
     try {
-      // For demo purposes, return mock user if token exists
-      if (token && token.startsWith('mock-jwt-token-')) {
-        return {
-          id: 1,
-          email: 'admin@warehouse.com',
-          name: 'Quản trị viên',
-          role: 'admin',
-          avatar: null,
-          permissions: ['all']
-        };
-      }
-      throw new Error('Invalid token');
+      const response = await api.post('/auth/verify-token', token);
+      return response.data;
     } catch (error) {
+      console.error('Token verification failed:', error);
       throw new Error('Token không hợp lệ');
     }
   },

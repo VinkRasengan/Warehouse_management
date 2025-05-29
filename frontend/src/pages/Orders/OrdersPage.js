@@ -54,7 +54,7 @@ const mockOrders = [
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState(mockOrders);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);

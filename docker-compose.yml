@@ -2,6 +2,20 @@ version: '3.8'
 
 services:
   # Databases
+  mongodb:
+    image: mongo:7
+    container_name: warehouse_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: warehouse_management
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - warehouse-network
+
   postgres-product:
     image: postgres:15
     environment:
@@ -153,10 +167,29 @@ services:
       - alert-service
       - payment-service
       - notification-service
+      - user-service
     networks:
       - warehouse-network
 
   # Microservices (ASP.NET Core)
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    ports:
+      - "5100:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - MongoDbSettings__ConnectionString=mongodb://admin:admin123@mongodb:27017
+      - MongoDbSettings__DatabaseName=warehouse_management
+      - JWT__Key=your-super-secret-key-that-is-at-least-32-characters-long
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
+    depends_on:
+      - mongodb
+    networks:
+      - warehouse-network
   product-service:
     build:
       context: .
@@ -339,6 +372,7 @@ services:
       - warehouse-network
 
 volumes:
+  mongodb_data:
   postgres_product_data:
   postgres_inventory_data:
   postgres_order_data:

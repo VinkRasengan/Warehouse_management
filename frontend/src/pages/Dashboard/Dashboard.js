@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Card, Statistic, Typography, Progress, Table, Tag, Space, Button } from 'antd';
+import { Row, Col, Card, Statistic, Typography, Table, Tag, Space, Button } from 'antd';
 import {
   ShoppingOutlined,
   InboxOutlined,
@@ -10,7 +10,7 @@ import {
   EyeOutlined,
   EditOutlined
 } from '@ant-design/icons';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import styled from 'styled-components';
 
 const { Title, Text } = Typography;

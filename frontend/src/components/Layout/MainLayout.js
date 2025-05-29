@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Avatar, Dropdown, Badge, Button, Space } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Button, Space } from 'antd';
 import {
   DashboardOutlined,
   ShoppingOutlined,
@@ -8,7 +8,6 @@ import {
   UserOutlined,
   BarChartOutlined,
   SettingOutlined,
-  BellOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -16,6 +15,9 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import NotificationCenter from '../Notifications/NotificationCenter';
+import ThemeToggle from '../Theme/ThemeToggle';
+import ColorPicker from '../Theme/ColorPicker';
 import styled from 'styled-components';
 
 const { Header, Sider, Content } = Layout;
@@ -184,14 +186,10 @@ const MainLayout = ({ children }) => {
               icon={<SearchOutlined />}
               style={{ fontSize: '16px' }}
             />
-            
-            <Badge count={5} size="small">
-              <Button
-                type="text"
-                icon={<BellOutlined />}
-                style={{ fontSize: '16px' }}
-              />
-            </Badge>
+
+            <ThemeToggle />
+            <ColorPicker />
+            <NotificationCenter />
 
             <Dropdown
               menu={{ items: userMenuItems }}

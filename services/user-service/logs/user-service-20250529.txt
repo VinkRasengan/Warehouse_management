@@ -1,0 +1,21 @@
+2025-05-29 22:30:20.847 +07:00 [INF] User registered successfully: admin@warehouse.com
+2025-05-29 22:30:20.877 +07:00 [INF] Default admin user created: admin@warehouse.com / admin123
+2025-05-29 22:30:21.061 +07:00 [INF] User registered successfully: manager@warehouse.com
+2025-05-29 22:30:21.062 +07:00 [INF] Demo user created: manager@warehouse.com / manager123
+2025-05-29 22:30:21.196 +07:00 [INF] User registered successfully: staff@warehouse.com
+2025-05-29 22:30:21.197 +07:00 [INF] Demo user created: staff@warehouse.com / staff123
+2025-05-29 22:30:21.209 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-29 22:30:21.241 +07:00 [INF] Now listening on: http://localhost:5000
+2025-05-29 22:30:21.241 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-29 22:30:21.242 +07:00 [INF] Hosting environment: Production
+2025-05-29 22:30:21.242 +07:00 [INF] Content root path: C:\Project\Warehouse_management\services\user-service
+2025-05-29 22:33:19.132 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/favicon.ico - null null
+2025-05-29 22:33:19.145 +07:00 [WRN] Failed to determine the https port for redirect.
+2025-05-29 22:33:19.162 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/favicon.ico - 404 0 null 31.1475ms
+2025-05-29 22:33:19.168 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/favicon.ico, Response status code: 404
+2025-05-29 22:33:19.171 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/favicon.ico - null null
+2025-05-29 22:33:19.174 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/favicon.ico - 404 0 null 3.4758ms
+2025-05-29 22:33:19.177 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/favicon.ico, Response status code: 404
+2025-05-29 22:33:19.386 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/manifest.json - null null
+2025-05-29 22:33:19.389 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/manifest.json - 404 0 null 2.7723ms
+2025-05-29 22:33:19.391 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/manifest.json, Response status code: 404

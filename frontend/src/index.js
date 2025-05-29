@@ -2,12 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ConfigProvider } from 'antd';
-import viVN from 'antd/locale/vi_VN';
 import { Toaster } from 'react-hot-toast';
 
 import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 
 // Create a client for React Query
@@ -21,44 +20,14 @@ const queryClient = new QueryClient({
   },
 });
 
-// Ant Design theme configuration
-const theme = {
-  token: {
-    colorPrimary: '#1890ff',
-    colorSuccess: '#52c41a',
-    colorWarning: '#faad14',
-    colorError: '#ff4d4f',
-    colorInfo: '#1890ff',
-    borderRadius: 8,
-    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
-  },
-  components: {
-    Button: {
-      borderRadius: 8,
-      fontWeight: 500,
-    },
-    Card: {
-      borderRadius: 12,
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-    },
-    Table: {
-      borderRadius: 8,
-    },
-    Input: {
-      borderRadius: 8,
-    },
-    Select: {
-      borderRadius: 8,
-    },
-  },
-};
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider locale={viVN} theme={theme}>
+      <ThemeProvider>
         <BrowserRouter>
           <AuthProvider>
             <App />
@@ -89,7 +58,7 @@ root.render(
             />
           </AuthProvider>
         </BrowserRouter>
-      </ConfigProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

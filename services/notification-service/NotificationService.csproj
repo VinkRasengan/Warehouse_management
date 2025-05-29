@@ -26,6 +26,7 @@
     <PackageReference Include="MailKit" Version="4.3.0" />
     <PackageReference Include="MimeKit" Version="4.3.0" />
     <PackageReference Include="Twilio" Version="6.14.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

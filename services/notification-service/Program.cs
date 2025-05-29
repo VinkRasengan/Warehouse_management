@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NotificationService.Data;
 using NotificationService.Services;
+using NotificationService.Hubs;
 using Serilog;
 using System.Text;
 
@@ -19,6 +20,7 @@ builder.Host.UseSerilog();
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Notification Service API", Version = "v1" });
@@ -80,6 +82,7 @@ builder.Services.AddScoped<INotificationService, NotificationService.Services.No
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ISmsService, SmsService>();
 builder.Services.AddScoped<IPushNotificationService, PushNotificationService>();
+builder.Services.AddScoped<IRealTimeNotificationService, RealTimeNotificationService>();
 builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 // Add health checks
@@ -112,6 +115,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
+app.MapHub<NotificationHub>("/notificationHub");
 
 // Ensure database is created
 using (var scope = app.Services.CreateScope())

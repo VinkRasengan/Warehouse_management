@@ -59,7 +59,7 @@ const mockInventory = [
 
 const InventoryPage = () => {
   const [inventory, setInventory] = useState(mockInventory);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -187,7 +187,7 @@ const InventoryPage = () => {
   const handleModalOk = async () => {
     try {
       const values = await form.validateFields();
-      const { quantity, reason } = values;
+      const { quantity } = values;
       
       setInventory(inventory.map(item => {
         if (item.key === selectedItem.key) {

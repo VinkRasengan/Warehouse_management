@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Card, Typography, Divider, Space, Checkbox } from 'antd';
+import { Form, Input, Button, Card, Typography, Divider, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, InboxOutlined } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import styled from 'styled-components';

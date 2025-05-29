@@ -109,7 +109,7 @@ const mockProducts = [
 
 const ProductsPage = () => {
   const [products, setProducts] = useState(mockProducts);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);

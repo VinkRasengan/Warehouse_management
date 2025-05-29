@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Select, DatePicker, Button, Typography, Statistic, Table } from 'antd';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
+import { Card, Row, Col, Select, DatePicker, Button, Typography, Statistic, Table, message } from 'antd';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
 import { DownloadOutlined, PrinterOutlined, FileExcelOutlined, FilePdfOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import exportService from '../../services/exportService';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -38,14 +39,61 @@ const ReportsPage = () => {
   const [dateRange, setDateRange] = useState([moment().subtract(30, 'days'), moment()]);
   const [loading, setLoading] = useState(false);
 
-  const handleExport = (format) => {
+  const handleExport = async (format) => {
+    if (!dateRange || dateRange.length !== 2) {
+      message.error('Please select a valid date range');
+      return;
+    }
+
     setLoading(true);
-    // Simulate export
-    setTimeout(() => {
+    try {
+      const startDate = dateRange[0].format('YYYY-MM-DD');
+      const endDate = dateRange[1].format('YYYY-MM-DD');
+
+      switch (reportType) {
+        case 'sales':
+          if (format === 'pdf') {
+            await exportService.exportSalesReportToPdf(startDate, endDate);
+          } else if (format === 'excel') {
+            await exportService.exportSalesReportToExcel(startDate, endDate);
+          } else if (format === 'csv') {
+            // Export current data as CSV
+            exportService.exportToCSV(topProducts, `Sales_Report_${startDate}_${endDate}`);
+          }
+          break;
+
+        case 'inventory':
+          if (format === 'pdf') {
+            await exportService.exportInventoryReportToPdf();
+          } else if (format === 'excel') {
+            await exportService.exportInventoryReportToExcel();
+          } else if (format === 'csv') {
+            exportService.exportToCSV([], `Inventory_Report_${new Date().toISOString().split('T')[0]}`);
+          }
+          break;
+
+        case 'customer':
+          if (format === 'pdf') {
+            await exportService.exportCustomerReportToPdf();
+          } else if (format === 'excel') {
+            await exportService.exportCustomerReportToExcel();
+          } else if (format === 'csv') {
+            exportService.exportToCSV([], `Customer_Report_${new Date().toISOString().split('T')[0]}`);
+          }
+          break;
+
+        default:
+          message.error('Unknown report type');
+      }
+    } catch (error) {
+      console.error('Export failed:', error);
+      message.error('Export failed. Please try again.');
+    } finally {
       setLoading(false);
-      console.log(`Exporting ${reportType} report as ${format}`);
-    }, 2000);
+    }
   };
+
+
 
   const renderSalesReport = () => (
     <div>
@@ -322,9 +370,9 @@ const ReportsPage = () => {
               >
                 PDF
               </Button>
-              <Button 
+              <Button
                 icon={<PrinterOutlined />}
-                onClick={() => window.print()}
+                onClick={() => exportService.printReport('report-content')}
               >
                 In
               </Button>
@@ -341,7 +389,9 @@ const ReportsPage = () => {
         </Row>
       </Card>
 
-      {renderReportContent()}
+      <div id="report-content">
+        {renderReportContent()}
+      </div>
     </div>
   );
 };

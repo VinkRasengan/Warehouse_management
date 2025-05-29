@@ -55,7 +55,7 @@ const mockCustomers = [
 
 const CustomersPage = () => {
   const [customers, setCustomers] = useState(mockCustomers);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [tierFilter, setTierFilter] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);

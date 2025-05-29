@@ -80,6 +80,11 @@ builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 builder.Services.AddHealthChecks()
     .AddNpgSql(connectionString);
 
+// Register services
+builder.Services.AddScoped<IReportingService, ReportingService.Services.ReportingService>();
+builder.Services.AddScoped<IPdfExportService, PdfExportService>();
+builder.Services.AddScoped<IExcelExportService, ExcelExportService>();
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
