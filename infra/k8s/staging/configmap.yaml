@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: warehouse-config
+  namespace: warehouse-staging
+data:
+  # JWT Configuration
+  JWT__Issuer: "WarehouseManagement"
+  JWT__Audience: "WarehouseManagement"
+  
+  # RabbitMQ Configuration
+  RabbitMQ__HostName: "rabbitmq-service"
+  RabbitMQ__Port: "5672"
+  RabbitMQ__UserName: "admin"
+  
+  # Redis Configuration
+  Redis__ConnectionString: "redis-service:6379"
+  
+  # Email Configuration
+  Email__SmtpHost: "smtp.gmail.com"
+  Email__SmtpPort: "587"
+  Email__FromName: "Warehouse Management Staging"
+  Email__FromAddress: "staging@warehouse.com"
+  
+  # Environment
+  ASPNETCORE_ENVIRONMENT: "Staging"
+  ASPNETCORE_URLS: "http://+:80"

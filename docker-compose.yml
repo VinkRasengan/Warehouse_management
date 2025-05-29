@@ -80,6 +80,32 @@ services:
     networks:
       - warehouse-network
 
+  postgres-payment:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5438:5432"
+    volumes:
+      - postgres_payment_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-notification:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5439:5432"
+    volumes:
+      - postgres_notification_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
   # Message Broker
   rabbitmq:
     image: rabbitmq:3-management
@@ -125,6 +151,8 @@ services:
       - customer-service
       - reporting-service
       - alert-service
+      - payment-service
+      - notification-service
     networks:
       - warehouse-network
 
@@ -255,6 +283,61 @@ services:
     networks:
       - warehouse-network
 
+  payment-service:
+    build:
+      context: .
+      dockerfile: services/payment-service/Dockerfile
+    ports:
+      - "5107:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-payment;Port=5432;Database=payment_db;Username=postgres;Password=password
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=password
+      - JWT__Key=your-super-secret-key-that-is-at-least-32-characters-long
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
+    depends_on:
+      - postgres-payment
+      - rabbitmq
+    networks:
+      - warehouse-network
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    ports:
+      - "5108:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-notification;Port=5432;Database=notification_db;Username=postgres;Password=password
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=password
+      - Email__SmtpHost=smtp.gmail.com
+      - Email__SmtpPort=587
+      - Email__FromName=Warehouse Management
+      - Email__FromAddress=noreply@warehouse.com
+      - Email__Username=your-email@gmail.com
+      - Email__Password=your-app-password
+      - Twilio__AccountSid=your-twilio-account-sid
+      - Twilio__AuthToken=your-twilio-auth-token
+      - Twilio__FromNumber=+1234567890
+      - JWT__Key=your-super-secret-key-that-is-at-least-32-characters-long
+      - JWT__Issuer=WarehouseManagement
+      - JWT__Audience=WarehouseManagement
+    depends_on:
+      - postgres-notification
+      - rabbitmq
+    networks:
+      - warehouse-network
+
 volumes:
   postgres_product_data:
   postgres_inventory_data:
@@ -262,6 +345,8 @@ volumes:
   postgres_customer_data:
   postgres_reporting_data:
   postgres_alert_data:
+  postgres_payment_data:
+  postgres_notification_data:
   rabbitmq_data:
   redis_data:
 

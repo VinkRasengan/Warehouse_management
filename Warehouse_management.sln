@@ -4,6 +4,22 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "api-gateway-dotnet\ApiGateway.csproj", "{397B105B-C0A2-871B-123B-D87F7819CF58}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService", "services\product-service\ProductService.csproj", "{B1234567-1234-1234-1234-123456789ABC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryService", "services\inventory-service\InventoryService.csproj", "{B2345678-2345-2345-2345-23456789ABCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService", "services\order-service\OrderService.csproj", "{B3456789-3456-3456-3456-3456789ABCDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerService", "services\customer-service\CustomerService.csproj", "{B456789A-4567-4567-4567-456789ABCDEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportingService", "services\reporting-service\ReportingService.csproj", "{B56789AB-5678-5678-5678-56789ABCDEF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlertService", "services\alert-service\AlertService.csproj", "{B6789ABC-6789-6789-6789-6789ABCDEF01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService", "services\payment-service\PaymentService.csproj", "{B789ABCD-7890-7890-7890-789ABCDEF012}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "services\notification-service\NotificationService.csproj", "{B89ABCDE-8901-8901-8901-89ABCDEF0123}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +30,38 @@ Global
 		{397B105B-C0A2-871B-123B-D87F7819CF58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{397B105B-C0A2-871B-123B-D87F7819CF58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{397B105B-C0A2-871B-123B-D87F7819CF58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1234567-1234-1234-1234-123456789ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1234567-1234-1234-1234-123456789ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1234567-1234-1234-1234-123456789ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1234567-1234-1234-1234-123456789ABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2345678-2345-2345-2345-23456789ABCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2345678-2345-2345-2345-23456789ABCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2345678-2345-2345-2345-23456789ABCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2345678-2345-2345-2345-23456789ABCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3456789-3456-3456-3456-3456789ABCDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3456789-3456-3456-3456-3456789ABCDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3456789-3456-3456-3456-3456789ABCDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3456789-3456-3456-3456-3456789ABCDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B456789A-4567-4567-4567-456789ABCDEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B456789A-4567-4567-4567-456789ABCDEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B456789A-4567-4567-4567-456789ABCDEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B456789A-4567-4567-4567-456789ABCDEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B56789AB-5678-5678-5678-56789ABCDEF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B56789AB-5678-5678-5678-56789ABCDEF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B56789AB-5678-5678-5678-56789ABCDEF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B56789AB-5678-5678-5678-56789ABCDEF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6789ABC-6789-6789-6789-6789ABCDEF01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6789ABC-6789-6789-6789-6789ABCDEF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6789ABC-6789-6789-6789-6789ABCDEF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6789ABC-6789-6789-6789-6789ABCDEF01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B789ABCD-7890-7890-7890-789ABCDEF012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B789ABCD-7890-7890-7890-789ABCDEF012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B789ABCD-7890-7890-7890-789ABCDEF012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B789ABCD-7890-7890-7890-789ABCDEF012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B89ABCDE-8901-8901-8901-89ABCDEF0123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B89ABCDE-8901-8901-8901-89ABCDEF0123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B89ABCDE-8901-8901-8901-89ABCDEF0123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B89ABCDE-8901-8901-8901-89ABCDEF0123}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

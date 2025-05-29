@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: warehouse-staging
+  labels:
+    app: product-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+      - name: product-service
+        image: ghcr.io/your-org/warehouse-management/product-service:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: warehouse-config
+              key: ASPNETCORE_ENVIRONMENT
+        - name: ASPNETCORE_URLS
+          valueFrom:
+            configMapKeyRef:
+              name: warehouse-config
+              key: ASPNETCORE_URLS
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=postgres-product-service;Port=5432;Database=product_db;Username=postgres;Password=$(POSTGRES_PASSWORD)"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: warehouse-secrets
+              key: POSTGRES_PASSWORD
+        - name: JWT__Key
+          valueFrom:
+            secretKeyRef:
+              name: warehouse-secrets
+              key: JWT__Key
+        - name: JWT__Issuer
+          valueFrom:
+            configMapKeyRef:
+              name: warehouse-config
+              key: JWT__Issuer
+        - name: JWT__Audience
+          valueFrom:
+            configMapKeyRef:
+              name: warehouse-config
+              key: JWT__Audience
+        - name: RabbitMQ__HostName
+          valueFrom:
+            configMapKeyRef:
+              name: warehouse-config
+              key: RabbitMQ__HostName
+        - name: RabbitMQ__Port
+          valueFrom:
+            configMapKeyRef:
+              name: warehouse-config
+              key: RabbitMQ__Port
+        - name: RabbitMQ__UserName
+          valueFrom:
+            configMapKeyRef:
+              name: warehouse-config
+              key: RabbitMQ__UserName
+        - name: RabbitMQ__Password
+          valueFrom:
+            secretKeyRef:
+              name: warehouse-secrets
+              key: RabbitMQ__Password
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: warehouse-staging
+spec:
+  selector:
+    app: product-service
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP

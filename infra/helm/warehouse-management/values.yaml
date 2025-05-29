@@ -1,0 +1,265 @@
+# Default values for warehouse-management
+# This is a YAML-formatted file.
+
+# Global configuration
+global:
+  imageRegistry: "ghcr.io"
+  imagePullSecrets: []
+  storageClass: ""
+
+# Environment configuration
+environment: staging
+
+# Image configuration
+image:
+  registry: ghcr.io
+  repository: your-org/warehouse-management
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Service configuration
+services:
+  apiGateway:
+    enabled: true
+    name: api-gateway-dotnet
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  productService:
+    enabled: true
+    name: product-service
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  inventoryService:
+    enabled: true
+    name: inventory-service
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  orderService:
+    enabled: true
+    name: order-service
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  customerService:
+    enabled: true
+    name: customer-service
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  paymentService:
+    enabled: true
+    name: payment-service
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  notificationService:
+    enabled: true
+    name: notification-service
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  reportingService:
+    enabled: true
+    name: reporting-service
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  alertService:
+    enabled: true
+    name: alert-service
+    replicaCount: 2
+    port: 80
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+  hosts:
+    - host: staging.warehouse.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: warehouse-tls
+      hosts:
+        - staging.warehouse.local
+
+# Configuration
+config:
+  jwt:
+    issuer: "WarehouseManagement"
+    audience: "WarehouseManagement"
+  
+  email:
+    smtpHost: "smtp.gmail.com"
+    smtpPort: "587"
+    fromName: "Warehouse Management"
+    fromAddress: "noreply@warehouse.com"
+
+# Secrets (these should be overridden in production)
+secrets:
+  jwtKey: "test-super-secret-key-that-is-at-least-32-characters-long"
+  postgresPassword: "password"
+  rabbitmqPassword: "password"
+  emailUsername: "your-email@gmail.com"
+  emailPassword: "your-app-password"
+  twilioAccountSid: "your-twilio-account-sid"
+  twilioAuthToken: "your-twilio-auth-token"
+  twilioFromNumber: "+1234567890"
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "password"
+    database: "warehouse_db"
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+
+# RabbitMQ configuration
+rabbitmq:
+  enabled: true
+  auth:
+    username: "admin"
+    password: "password"
+  persistence:
+    enabled: true
+    size: 8Gi
+
+# Redis configuration
+redis:
+  enabled: true
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+
+# Monitoring
+monitoring:
+  enabled: false
+  prometheus:
+    enabled: false
+  grafana:
+    enabled: false
+
+# Autoscaling
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Network Policies
+networkPolicy:
+  enabled: false
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod Security Context
+podSecurityContext:
+  fsGroup: 2000
+
+# Security Context
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Node Selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}

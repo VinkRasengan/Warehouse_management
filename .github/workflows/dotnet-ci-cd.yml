@@ -1,0 +1,361 @@
+name: .NET CI/CD Pipeline - Warehouse Management
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: warehouse-management
+
+jobs:
+  # Job 1: Build and Test
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+      
+      rabbitmq:
+        image: rabbitmq:3-management
+        env:
+          RABBITMQ_DEFAULT_USER: admin
+          RABBITMQ_DEFAULT_PASS: password
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 30s
+          --health-timeout 30s
+          --health-retries 3
+        ports:
+          - 5672:5672
+          - 15672:15672
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore dependencies
+      run: |
+        dotnet restore api-gateway-dotnet/ApiGateway.csproj
+        dotnet restore services/product-service/ProductService.csproj
+        dotnet restore services/inventory-service/InventoryService.csproj
+        dotnet restore services/order-service/OrderService.csproj
+        dotnet restore services/customer-service/CustomerService.csproj
+        dotnet restore services/payment-service/PaymentService.csproj
+        dotnet restore services/notification-service/NotificationService.csproj
+        dotnet restore services/reporting-service/ReportingService.csproj
+        dotnet restore services/alert-service/AlertService.csproj
+
+    - name: Build solution
+      run: dotnet build Warehouse_management.sln --no-restore --configuration Release
+
+    - name: Run unit tests
+      run: |
+        dotnet test --no-build --configuration Release --verbosity normal \
+          --collect:"XPlat Code Coverage" --results-directory ./coverage
+      env:
+        ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=test_db;Username=postgres;Password=postgres"
+        JWT__Key: "test-super-secret-key-that-is-at-least-32-characters-long"
+        JWT__Issuer: "WarehouseManagement"
+        JWT__Audience: "WarehouseManagement"
+        RabbitMQ__HostName: "localhost"
+        RabbitMQ__Port: "5672"
+        RabbitMQ__UserName: "admin"
+        RabbitMQ__Password: "password"
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./coverage
+        fail_ci_if_error: false
+
+    - name: Code quality analysis with SonarCloud
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # Job 2: Security Scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'warehouse-management'
+        path: '.'
+        format: 'ALL'
+
+  # Job 3: Build and Push Docker Images
+  build-images:
+    runs-on: ubuntu-latest
+    needs: [build-and-test, security-scan]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    strategy:
+      matrix:
+        service: 
+          - api-gateway-dotnet
+          - services/product-service
+          - services/inventory-service
+          - services/order-service
+          - services/customer-service
+          - services/payment-service
+          - services/notification-service
+          - services/reporting-service
+          - services/alert-service
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract service name
+      id: service-name
+      run: |
+        SERVICE_NAME=$(basename ${{ matrix.service }})
+        echo "name=${SERVICE_NAME}" >> $GITHUB_OUTPUT
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ steps.service-name.outputs.name }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ${{ matrix.service }}/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Job 4: Deploy to Staging
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: build-images
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Configure kubectl
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+
+    - name: Deploy to staging
+      run: |
+        export KUBECONFIG=kubeconfig
+        
+        # Update image tags in Kubernetes manifests
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/api-gateway-dotnet:${{ github.sha }}|g" infra/k8s/staging/api-gateway-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/product-service:${{ github.sha }}|g" infra/k8s/staging/product-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/inventory-service:${{ github.sha }}|g" infra/k8s/staging/inventory-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/order-service:${{ github.sha }}|g" infra/k8s/staging/order-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/customer-service:${{ github.sha }}|g" infra/k8s/staging/customer-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/payment-service:${{ github.sha }}|g" infra/k8s/staging/payment-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/notification-service:${{ github.sha }}|g" infra/k8s/staging/notification-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/reporting-service:${{ github.sha }}|g" infra/k8s/staging/reporting-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/alert-service:${{ github.sha }}|g" infra/k8s/staging/alert-service-deployment.yaml
+        
+        # Apply Kubernetes manifests
+        kubectl apply -f infra/k8s/staging/
+
+    - name: Wait for deployment
+      run: |
+        export KUBECONFIG=kubeconfig
+        kubectl rollout status deployment/api-gateway -n warehouse-staging --timeout=300s
+        kubectl rollout status deployment/product-service -n warehouse-staging --timeout=300s
+        kubectl rollout status deployment/inventory-service -n warehouse-staging --timeout=300s
+        kubectl rollout status deployment/order-service -n warehouse-staging --timeout=300s
+        kubectl rollout status deployment/customer-service -n warehouse-staging --timeout=300s
+        kubectl rollout status deployment/payment-service -n warehouse-staging --timeout=300s
+        kubectl rollout status deployment/notification-service -n warehouse-staging --timeout=300s
+        kubectl rollout status deployment/reporting-service -n warehouse-staging --timeout=300s
+        kubectl rollout status deployment/alert-service -n warehouse-staging --timeout=300s
+
+    - name: Run smoke tests
+      run: |
+        export KUBECONFIG=kubeconfig
+        
+        # Get staging URL
+        STAGING_URL=$(kubectl get ingress warehouse-ingress -n warehouse-staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        
+        # Run basic health checks
+        curl -f http://${STAGING_URL}/health || exit 1
+        curl -f http://${STAGING_URL}/api/products/health || exit 1
+        curl -f http://${STAGING_URL}/api/inventory/health || exit 1
+        curl -f http://${STAGING_URL}/api/orders/health || exit 1
+        curl -f http://${STAGING_URL}/api/customers/health || exit 1
+        curl -f http://${STAGING_URL}/api/payments/health || exit 1
+        curl -f http://${STAGING_URL}/api/notifications/health || exit 1
+        curl -f http://${STAGING_URL}/api/reports/health || exit 1
+        curl -f http://${STAGING_URL}/api/alerts/health || exit 1
+
+  # Job 5: Deploy to Production
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Configure kubectl
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+
+    - name: Deploy to production
+      run: |
+        export KUBECONFIG=kubeconfig
+
+        # Update image tags in Kubernetes manifests
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/api-gateway-dotnet:${{ github.sha }}|g" infra/k8s/production/api-gateway-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/product-service:${{ github.sha }}|g" infra/k8s/production/product-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/inventory-service:${{ github.sha }}|g" infra/k8s/production/inventory-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/order-service:${{ github.sha }}|g" infra/k8s/production/order-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/customer-service:${{ github.sha }}|g" infra/k8s/production/customer-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/payment-service:${{ github.sha }}|g" infra/k8s/production/payment-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/notification-service:${{ github.sha }}|g" infra/k8s/production/notification-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/reporting-service:${{ github.sha }}|g" infra/k8s/production/reporting-service-deployment.yaml
+        sed -i "s|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository }}/alert-service:${{ github.sha }}|g" infra/k8s/production/alert-service-deployment.yaml
+
+        # Apply Kubernetes manifests with rolling update
+        kubectl apply -f infra/k8s/production/
+
+    - name: Wait for production deployment
+      run: |
+        export KUBECONFIG=kubeconfig
+        kubectl rollout status deployment/api-gateway -n warehouse-production --timeout=600s
+        kubectl rollout status deployment/product-service -n warehouse-production --timeout=600s
+        kubectl rollout status deployment/inventory-service -n warehouse-production --timeout=600s
+        kubectl rollout status deployment/order-service -n warehouse-production --timeout=600s
+        kubectl rollout status deployment/customer-service -n warehouse-production --timeout=600s
+        kubectl rollout status deployment/payment-service -n warehouse-production --timeout=600s
+        kubectl rollout status deployment/notification-service -n warehouse-production --timeout=600s
+        kubectl rollout status deployment/reporting-service -n warehouse-production --timeout=600s
+        kubectl rollout status deployment/alert-service -n warehouse-production --timeout=600s
+
+    - name: Production health check
+      run: |
+        export KUBECONFIG=kubeconfig
+
+        # Get production URL
+        PROD_URL=$(kubectl get ingress warehouse-ingress -n warehouse-production -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+        # Run comprehensive health checks
+        curl -f https://${PROD_URL}/health || exit 1
+        curl -f https://${PROD_URL}/api/products/health || exit 1
+        curl -f https://${PROD_URL}/api/inventory/health || exit 1
+        curl -f https://${PROD_URL}/api/orders/health || exit 1
+        curl -f https://${PROD_URL}/api/customers/health || exit 1
+        curl -f https://${PROD_URL}/api/payments/health || exit 1
+        curl -f https://${PROD_URL}/api/notifications/health || exit 1
+        curl -f https://${PROD_URL}/api/reports/health || exit 1
+        curl -f https://${PROD_URL}/api/alerts/health || exit 1
+
+    - name: Notify deployment success
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: "🚀 Production deployment successful! Version: ${{ github.sha }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: success()
+
+    - name: Notify deployment failure
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: "❌ Production deployment failed! Version: ${{ github.sha }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: failure()
