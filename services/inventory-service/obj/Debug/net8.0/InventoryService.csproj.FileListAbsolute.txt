@@ -133,3 +133,4 @@ C:\Project\Warehouse_management\services\inventory-service\obj\Debug\net8.0\refi
 C:\Project\Warehouse_management\services\inventory-service\obj\Debug\net8.0\InventoryService.pdb
 C:\Project\Warehouse_management\services\inventory-service\obj\Debug\net8.0\InventoryService.genruntimeconfig.cache
 C:\Project\Warehouse_management\services\inventory-service\obj\Debug\net8.0\ref\InventoryService.dll
+C:\Project\Warehouse_management\services\inventory-service\bin\Debug\net8.0\appsettings.json

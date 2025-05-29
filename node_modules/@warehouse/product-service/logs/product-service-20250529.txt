@@ -70,3 +70,32 @@ SELECT setval(
 2025-05-29 20:04:35.378 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
 VALUES ('20250529130254_InitialCreate', '8.0.0');
+2025-05-29 20:41:52.896 +07:00 [INF] Executed DbCommand (31ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE WHEN COUNT(*) = 0 THEN FALSE ELSE TRUE END
+FROM pg_class AS cls
+JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+WHERE
+        cls.relkind IN ('r', 'v', 'm', 'f', 'p') AND
+        ns.nspname NOT IN ('pg_catalog', 'information_schema') AND
+        -- Exclude tables which are members of PG extensions
+        NOT EXISTS (
+            SELECT 1 FROM pg_depend WHERE
+                classid=(
+                    SELECT cls.oid
+                    FROM pg_class AS cls
+                             JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+                    WHERE relname='pg_class' AND ns.nspname='pg_catalog'
+                ) AND
+                objid=cls.oid AND
+                deptype IN ('e', 'x')
+        )
+2025-05-29 20:41:52.934 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-29 20:41:52.943 +07:00 [INF] Creating key {972aa9de-a2ec-4b40-b063-24b2f04befa0} with creation date 2025-05-29 13:41:52Z, activation date 2025-05-29 13:41:52Z, and expiration date 2025-08-27 13:41:52Z.
+2025-05-29 20:41:52.956 +07:00 [INF] Writing data to file 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys\key-972aa9de-a2ec-4b40-b063-24b2f04befa0.xml'.
+2025-05-29 20:41:52.994 +07:00 [INF] Now listening on: http://localhost:5001
+2025-05-29 20:41:52.996 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-29 20:41:52.996 +07:00 [INF] Hosting environment: Production
+2025-05-29 20:41:52.997 +07:00 [INF] Content root path: C:\Project\Warehouse_management\services\product-service
+2025-05-29 20:42:19.772 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5001/swagger - null null
+2025-05-29 20:42:19.802 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5001/swagger - 404 0 null 31.7782ms
+2025-05-29 20:42:19.806 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5001/swagger, Response status code: 404

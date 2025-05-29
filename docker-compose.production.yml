@@ -1,0 +1,177 @@
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  postgres-product:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: product_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_product_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-inventory:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_inventory_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-order:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_order_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  postgres-customer:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: customer_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_customer_data:/var/lib/postgresql/data
+    networks:
+      - warehouse-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - warehouse-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - warehouse-network
+
+  # Application Services
+  product-service:
+    build:
+      context: ./services/product-service
+      dockerfile: Dockerfile
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres-product;Port=5432;Database=product_db;Username=postgres;Password=password
+      - JWT__Key=your-super-secret-key-that-is-at-least-32-characters-long
+      - RabbitMQ__HostName=rabbitmq
+    depends_on:
+      - postgres-product
+      - rabbitmq
+    networks:
+      - warehouse-network
+
+  inventory-service:
+    build:
+      context: ./services/inventory-service
+      dockerfile: Dockerfile
+    ports:
+      - "5002:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres-inventory;Port=5432;Database=inventory_db;Username=postgres;Password=password
+      - JWT__Key=your-super-secret-key-that-is-at-least-32-characters-long
+      - RabbitMQ__HostName=rabbitmq
+      - Redis__ConnectionString=redis:6379
+    depends_on:
+      - postgres-inventory
+      - rabbitmq
+      - redis
+    networks:
+      - warehouse-network
+
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    ports:
+      - "5003:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres-order;Port=5432;Database=order_db;Username=postgres;Password=password
+      - JWT__Key=your-super-secret-key-that-is-at-least-32-characters-long
+      - RabbitMQ__HostName=rabbitmq
+    depends_on:
+      - postgres-order
+      - rabbitmq
+    networks:
+      - warehouse-network
+
+  customer-service:
+    build:
+      context: ./services/customer-service
+      dockerfile: Dockerfile
+    ports:
+      - "5004:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres-customer;Port=5432;Database=customer_db;Username=postgres;Password=password
+      - JWT__Key=your-super-secret-key-that-is-at-least-32-characters-long
+      - RabbitMQ__HostName=rabbitmq
+    depends_on:
+      - postgres-customer
+      - rabbitmq
+    networks:
+      - warehouse-network
+
+  # Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - product-service
+      - inventory-service
+      - order-service
+      - customer-service
+    networks:
+      - warehouse-network
+
+volumes:
+  postgres_product_data:
+  postgres_inventory_data:
+  postgres_order_data:
+  postgres_customer_data:
+  redis_data:
+  rabbitmq_data:
+
+networks:
+  warehouse-network:
+    driver: bridge

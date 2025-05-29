@@ -129,3 +129,4 @@ C:\Project\Warehouse_management\services\product-service\bin\Debug\net8.0\Health
 C:\Project\Warehouse_management\services\product-service\bin\Debug\net8.0\FluentValidation.dll
 C:\Project\Warehouse_management\services\product-service\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
 C:\Project\Warehouse_management\services\product-service\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\Project\Warehouse_management\services\product-service\bin\Debug\net8.0\appsettings.json

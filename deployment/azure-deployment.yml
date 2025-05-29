@@ -1,0 +1,89 @@
+# Azure Container Instances Deployment
+apiVersion: 2019-12-01
+location: eastus
+name: warehouse-management
+properties:
+  containers:
+  - name: product-service
+    properties:
+      image: your-registry/warehouse-management/product-service:latest
+      ports:
+      - port: 80
+        protocol: TCP
+      environmentVariables:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - name: ConnectionStrings__DefaultConnection
+        secureValue: "Host=your-postgres-server;Database=product_db;Username=postgres;Password=your-password"
+      resources:
+        requests:
+          cpu: 0.5
+          memoryInGb: 1.0
+  
+  - name: inventory-service
+    properties:
+      image: your-registry/warehouse-management/inventory-service:latest
+      ports:
+      - port: 80
+        protocol: TCP
+      environmentVariables:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - name: ConnectionStrings__DefaultConnection
+        secureValue: "Host=your-postgres-server;Database=inventory_db;Username=postgres;Password=your-password"
+      resources:
+        requests:
+          cpu: 0.5
+          memoryInGb: 1.0
+
+  - name: order-service
+    properties:
+      image: your-registry/warehouse-management/order-service:latest
+      ports:
+      - port: 80
+        protocol: TCP
+      environmentVariables:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - name: ConnectionStrings__DefaultConnection
+        secureValue: "Host=your-postgres-server;Database=order_db;Username=postgres;Password=your-password"
+      resources:
+        requests:
+          cpu: 0.5
+          memoryInGb: 1.0
+
+  - name: customer-service
+    properties:
+      image: your-registry/warehouse-management/customer-service:latest
+      ports:
+      - port: 80
+        protocol: TCP
+      environmentVariables:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - name: ConnectionStrings__DefaultConnection
+        secureValue: "Host=your-postgres-server;Database=customer_db;Username=postgres;Password=your-password"
+      resources:
+        requests:
+          cpu: 0.5
+          memoryInGb: 1.0
+
+  ipAddress:
+    type: Public
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 5001
+    - protocol: TCP
+      port: 5002
+    - protocol: TCP
+      port: 5003
+    - protocol: TCP
+      port: 5004
+  osType: Linux
+  restartPolicy: Always
+
+tags:
+  Environment: Production
+  Application: WarehouseManagement

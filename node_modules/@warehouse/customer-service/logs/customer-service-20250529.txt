@@ -74,3 +74,100 @@ SELECT setval(
 2025-05-29 20:12:35.651 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
 VALUES ('20250529131216_InitialCreate', '8.0.0');
+2025-05-29 20:43:37.623 +07:00 [INF] No action descriptors found. This may indicate an incorrectly configured application or missing application parts. To learn more, visit https://aka.ms/aspnet/mvc/app-parts
+2025-05-29 20:43:38.117 +07:00 [INF] Executed DbCommand (32ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE WHEN COUNT(*) = 0 THEN FALSE ELSE TRUE END
+FROM pg_class AS cls
+JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+WHERE
+        cls.relkind IN ('r', 'v', 'm', 'f', 'p') AND
+        ns.nspname NOT IN ('pg_catalog', 'information_schema') AND
+        -- Exclude tables which are members of PG extensions
+        NOT EXISTS (
+            SELECT 1 FROM pg_depend WHERE
+                classid=(
+                    SELECT cls.oid
+                    FROM pg_class AS cls
+                             JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+                    WHERE relname='pg_class' AND ns.nspname='pg_catalog'
+                ) AND
+                objid=cls.oid AND
+                deptype IN ('e', 'x')
+        )
+2025-05-29 20:43:38.132 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-29 20:43:38.158 +07:00 [INF] Now listening on: http://localhost:5004
+2025-05-29 20:43:38.159 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-29 20:43:38.160 +07:00 [INF] Hosting environment: Production
+2025-05-29 20:43:38.161 +07:00 [INF] Content root path: C:\Project\Warehouse_management\services\customer-service
+2025-05-29 20:44:05.961 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger - null null
+2025-05-29 20:44:05.991 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger - 404 0 null 31.7906ms
+2025-05-29 20:44:05.997 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5004/swagger, Response status code: 404
+2025-05-29 20:51:16.157 +07:00 [INF] Executed DbCommand (31ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE WHEN COUNT(*) = 0 THEN FALSE ELSE TRUE END
+FROM pg_class AS cls
+JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+WHERE
+        cls.relkind IN ('r', 'v', 'm', 'f', 'p') AND
+        ns.nspname NOT IN ('pg_catalog', 'information_schema') AND
+        -- Exclude tables which are members of PG extensions
+        NOT EXISTS (
+            SELECT 1 FROM pg_depend WHERE
+                classid=(
+                    SELECT cls.oid
+                    FROM pg_class AS cls
+                             JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+                    WHERE relname='pg_class' AND ns.nspname='pg_catalog'
+                ) AND
+                objid=cls.oid AND
+                deptype IN ('e', 'x')
+        )
+2025-05-29 20:51:16.195 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-29 20:51:16.222 +07:00 [INF] Now listening on: http://localhost:5004
+2025-05-29 20:51:16.224 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-29 20:51:16.224 +07:00 [INF] Hosting environment: Production
+2025-05-29 20:51:16.225 +07:00 [INF] Content root path: C:\Project\Warehouse_management\services\customer-service
+2025-05-29 20:51:43.962 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger - null null
+2025-05-29 20:51:43.998 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger - 404 0 null 39.107ms
+2025-05-29 20:51:44.003 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5004/swagger, Response status code: 404
+2025-05-29 20:54:02.091 +07:00 [INF] Executed DbCommand (30ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE WHEN COUNT(*) = 0 THEN FALSE ELSE TRUE END
+FROM pg_class AS cls
+JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+WHERE
+        cls.relkind IN ('r', 'v', 'm', 'f', 'p') AND
+        ns.nspname NOT IN ('pg_catalog', 'information_schema') AND
+        -- Exclude tables which are members of PG extensions
+        NOT EXISTS (
+            SELECT 1 FROM pg_depend WHERE
+                classid=(
+                    SELECT cls.oid
+                    FROM pg_class AS cls
+                             JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+                    WHERE relname='pg_class' AND ns.nspname='pg_catalog'
+                ) AND
+                objid=cls.oid AND
+                deptype IN ('e', 'x')
+        )
+2025-05-29 20:54:02.130 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-29 20:54:02.164 +07:00 [INF] Now listening on: http://localhost:5004
+2025-05-29 20:54:02.166 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-29 20:54:02.166 +07:00 [INF] Hosting environment: Production
+2025-05-29 20:54:02.167 +07:00 [INF] Content root path: C:\Project\Warehouse_management\services\customer-service
+2025-05-29 20:54:21.282 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger - null null
+2025-05-29 20:54:21.325 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger - 301 0 null 44.892ms
+2025-05-29 20:54:21.333 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger/index.html - null null
+2025-05-29 20:54:21.381 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger/index.html - 200 null text/html;charset=utf-8 48.3257ms
+2025-05-29 20:54:21.401 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger/swagger-ui-bundle.js - null null
+2025-05-29 20:54:21.403 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger/swagger-ui-standalone-preset.js - null null
+2025-05-29 20:54:21.403 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger/swagger-ui.css - null null
+2025-05-29 20:54:21.420 +07:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2025-05-29 20:54:21.420 +07:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2025-05-29 20:54:21.421 +07:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2025-05-29 20:54:21.422 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger/swagger-ui-standalone-preset.js - 200 312163 text/javascript 19.839ms
+2025-05-29 20:54:21.424 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger/swagger-ui.css - 200 144929 text/css 20.6685ms
+2025-05-29 20:54:21.425 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger/swagger-ui-bundle.js - 200 1061536 text/javascript 23.5265ms
+2025-05-29 20:54:21.538 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger/v1/swagger.json - null null
+2025-05-29 20:54:21.552 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5004/swagger/favicon-32x32.png - null null
+2025-05-29 20:54:21.555 +07:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2025-05-29 20:54:21.556 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger/favicon-32x32.png - 200 628 image/png 3.7144ms
+2025-05-29 20:54:21.600 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5004/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 61.8522ms

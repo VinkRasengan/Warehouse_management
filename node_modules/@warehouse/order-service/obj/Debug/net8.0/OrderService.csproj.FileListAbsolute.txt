@@ -125,3 +125,4 @@ C:\Project\Warehouse_management\services\order-service\obj\Debug\net8.0\refint\O
 C:\Project\Warehouse_management\services\order-service\obj\Debug\net8.0\OrderService.pdb
 C:\Project\Warehouse_management\services\order-service\obj\Debug\net8.0\OrderService.genruntimeconfig.cache
 C:\Project\Warehouse_management\services\order-service\obj\Debug\net8.0\ref\OrderService.dll
+C:\Project\Warehouse_management\services\order-service\bin\Debug\net8.0\appsettings.json

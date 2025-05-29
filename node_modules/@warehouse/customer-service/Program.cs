@@ -48,9 +48,9 @@ builder.Services.AddDbContext<CustomerDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Configure JWT Authentication
-var jwtSecret = builder.Configuration["JWT__Secret"] ?? "your-jwt-secret-key-here-make-it-long-and-secure";
-var jwtIssuer = builder.Configuration["JWT__Issuer"] ?? "WarehouseManagement";
-var jwtAudience = builder.Configuration["JWT__Audience"] ?? "WarehouseManagement";
+var jwtSecret = builder.Configuration["JWT:Key"] ?? "your-super-secret-key-that-is-at-least-32-characters-long";
+var jwtIssuer = builder.Configuration["JWT:Issuer"] ?? "WarehouseManagement";
+var jwtAudience = builder.Configuration["JWT:Audience"] ?? "WarehouseManagement";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -94,11 +94,12 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Service API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseCors("AllowAll");
 app.UseAuthentication();

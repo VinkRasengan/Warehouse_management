@@ -129,3 +129,4 @@ C:\Project\Warehouse_management\services\customer-service\obj\Debug\net8.0\refin
 C:\Project\Warehouse_management\services\customer-service\obj\Debug\net8.0\CustomerService.pdb
 C:\Project\Warehouse_management\services\customer-service\obj\Debug\net8.0\CustomerService.genruntimeconfig.cache
 C:\Project\Warehouse_management\services\customer-service\obj\Debug\net8.0\ref\CustomerService.dll
+C:\Project\Warehouse_management\services\customer-service\bin\Debug\net8.0\appsettings.json
