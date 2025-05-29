@@ -122,3 +122,27 @@ WHERE
 2025-05-29 20:42:54.321 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5002/swagger - null null
 2025-05-29 20:42:54.356 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5002/swagger - 404 0 null 35.9954ms
 2025-05-29 20:42:54.363 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5002/swagger, Response status code: 404
+2025-05-29 21:20:20.916 +07:00 [INF] Executed DbCommand (36ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE WHEN COUNT(*) = 0 THEN FALSE ELSE TRUE END
+FROM pg_class AS cls
+JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+WHERE
+        cls.relkind IN ('r', 'v', 'm', 'f', 'p') AND
+        ns.nspname NOT IN ('pg_catalog', 'information_schema') AND
+        -- Exclude tables which are members of PG extensions
+        NOT EXISTS (
+            SELECT 1 FROM pg_depend WHERE
+                classid=(
+                    SELECT cls.oid
+                    FROM pg_class AS cls
+                             JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
+                    WHERE relname='pg_class' AND ns.nspname='pg_catalog'
+                ) AND
+                objid=cls.oid AND
+                deptype IN ('e', 'x')
+        )
+2025-05-29 21:20:20.956 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-05-29 21:20:20.987 +07:00 [INF] Now listening on: http://localhost:5002
+2025-05-29 21:20:20.988 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-29 21:20:20.988 +07:00 [INF] Hosting environment: Production
+2025-05-29 21:20:20.988 +07:00 [INF] Content root path: C:\Project\Warehouse_management\services\inventory-service
