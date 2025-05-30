@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project\\Warehouse_management\\services\\customer-service\\CustomerService.csproj": {}
+    "C:\\Project\\Warehouse_management\\services\\customer-service\\CustomerService.csproj": {}
   },
   "projects": {
-    "D:\\Project\\Warehouse_management\\services\\customer-service\\CustomerService.csproj": {
+    "C:\\Project\\Warehouse_management\\services\\customer-service\\CustomerService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project\\Warehouse_management\\services\\customer-service\\CustomerService.csproj",
+        "projectUniqueName": "C:\\Project\\Warehouse_management\\services\\customer-service\\CustomerService.csproj",
         "projectName": "CustomerService",
-        "projectPath": "D:\\Project\\Warehouse_management\\services\\customer-service\\CustomerService.csproj",
+        "projectPath": "C:\\Project\\Warehouse_management\\services\\customer-service\\CustomerService.csproj",
         "packagesPath": "C:\\Users\\ndvin\\.nuget\\packages\\",
-        "outputPath": "D:\\Project\\Warehouse_management\\services\\customer-service\\obj\\",
+        "outputPath": "C:\\Project\\Warehouse_management\\services\\customer-service\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

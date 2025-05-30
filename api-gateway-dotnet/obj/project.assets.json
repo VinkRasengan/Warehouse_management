@@ -2410,11 +2410,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\Warehouse_management\\api-gateway-dotnet\\ApiGateway.csproj",
+      "projectUniqueName": "C:\\Project\\Warehouse_management\\api-gateway-dotnet\\ApiGateway.csproj",
       "projectName": "ApiGateway",
-      "projectPath": "D:\\Project\\Warehouse_management\\api-gateway-dotnet\\ApiGateway.csproj",
+      "projectPath": "C:\\Project\\Warehouse_management\\api-gateway-dotnet\\ApiGateway.csproj",
       "packagesPath": "C:\\Users\\ndvin\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\Warehouse_management\\api-gateway-dotnet\\obj\\",
+      "outputPath": "C:\\Project\\Warehouse_management\\api-gateway-dotnet\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

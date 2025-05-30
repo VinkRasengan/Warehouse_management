@@ -4,7 +4,7 @@ namespace ProductService.DTOs;
 
 public class ProductDto
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string SKU { get; set; } = string.Empty;
@@ -66,9 +66,9 @@ public class UpdateProductDto
 
 public class ProductAttributeDto
 {
-    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
 }
 
 public class CreateProductAttributeDto

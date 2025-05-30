@@ -4213,11 +4213,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\Warehouse_management\\services\\inventory-service\\InventoryService.csproj",
+      "projectUniqueName": "C:\\Project\\Warehouse_management\\services\\inventory-service\\InventoryService.csproj",
       "projectName": "InventoryService",
-      "projectPath": "D:\\Project\\Warehouse_management\\services\\inventory-service\\InventoryService.csproj",
+      "projectPath": "C:\\Project\\Warehouse_management\\services\\inventory-service\\InventoryService.csproj",
       "packagesPath": "C:\\Users\\ndvin\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\Warehouse_management\\services\\inventory-service\\obj\\",
+      "outputPath": "C:\\Project\\Warehouse_management\\services\\inventory-service\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

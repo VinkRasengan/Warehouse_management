@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProductService.Data;
 using ProductService.Services;
+using ProductService.Models;
 using Serilog;
 using System.Text;
 
@@ -21,11 +22,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure Entity Framework
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-Console.WriteLine($"Connection String: {connectionString}");
-builder.Services.AddDbContext<ProductDbContext>(options =>
-    options.UseNpgsql(connectionString));
+// Configure Entity Framework - Temporarily disabled for MongoDB migration
+// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Console.WriteLine($"Connection String: {connectionString}");
+// builder.Services.AddDbContext<ProductDbContext>(options =>
+//     options.UseNpgsql(connectionString));
 
 // Configure JWT Authentication
 var jwtSecret = builder.Configuration["JWT:Key"] ?? "your-super-secret-key-that-is-at-least-32-characters-long";
@@ -53,15 +54,17 @@ builder.Services.AddAuthorization();
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Add custom services
+builder.Services.AddSingleton<IMongoRepository<Product>, InMemoryProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService.Services.ProductService>();
 builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
-// Add health checks
-var healthChecksBuilder = builder.Services.AddHealthChecks();
-if (!string.IsNullOrEmpty(connectionString))
-{
-    healthChecksBuilder.AddNpgSql(connectionString);
-}
+// Add health checks - Temporarily disabled for MongoDB migration
+builder.Services.AddHealthChecks();
+// var healthChecksBuilder = builder.Services.AddHealthChecks();
+// if (!string.IsNullOrEmpty(connectionString))
+// {
+//     healthChecksBuilder.AddNpgSql(connectionString);
+// }
 
 // Add CORS
 builder.Services.AddCors(options =>
@@ -90,11 +93,11 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
-// Ensure database is created
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
-    context.Database.EnsureCreated();
-}
+// Ensure database is created - Temporarily disabled for MongoDB migration
+// using (var scope = app.Services.CreateScope())
+// {
+//     var context = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
+//     context.Database.EnsureCreated();
+// }
 
 app.Run();

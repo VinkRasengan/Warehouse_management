@@ -5199,11 +5199,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj",
+      "projectUniqueName": "C:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj",
       "projectName": "ReportingService",
-      "projectPath": "D:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj",
+      "projectPath": "C:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj",
       "packagesPath": "C:\\Users\\ndvin\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\Warehouse_management\\services\\reporting-service\\obj\\",
+      "outputPath": "C:\\Project\\Warehouse_management\\services\\reporting-service\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
