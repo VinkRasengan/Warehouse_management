@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj": {}
+    "D:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj": {}
   },
   "projects": {
-    "C:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj": {
+    "D:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj",
+        "projectUniqueName": "D:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj",
         "projectName": "ReportingService",
-        "projectPath": "C:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj",
+        "projectPath": "D:\\Project\\Warehouse_management\\services\\reporting-service\\ReportingService.csproj",
         "packagesPath": "C:\\Users\\ndvin\\.nuget\\packages\\",
-        "outputPath": "C:\\Project\\Warehouse_management\\services\\reporting-service\\obj\\",
+        "outputPath": "D:\\Project\\Warehouse_management\\services\\reporting-service\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -62,6 +62,10 @@
               "target": "Package",
               "version": "[12.0.1, )"
             },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
             "FluentValidation.AspNetCore": {
               "target": "Package",
               "version": "[11.3.0, )"
@@ -77,6 +81,10 @@
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2023.12.6, )"
             },
             "RabbitMQ.Client": {
               "target": "Package",

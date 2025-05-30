@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "uyTNZTHjOds=",
+  "dgSpecHash": "XKXwa27Sefg=",
   "success": true,
-  "projectFilePath": "C:\\Project\\Warehouse_management\\services\\inventory-service\\InventoryService.csproj",
+  "projectFilePath": "D:\\Project\\Warehouse_management\\services\\inventory-service\\InventoryService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ndvin\\.nuget\\packages\\aspnetcore.healthchecks.npgsql\\8.0.0\\aspnetcore.healthchecks.npgsql.8.0.0.nupkg.sha512",
     "C:\\Users\\ndvin\\.nuget\\packages\\aspnetcore.healthchecks.redis\\8.0.0\\aspnetcore.healthchecks.redis.8.0.0.nupkg.sha512",

@@ -4256,11 +4256,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Project\\Warehouse_management\\services\\payment-service\\PaymentService.csproj",
+      "projectUniqueName": "D:\\Project\\Warehouse_management\\services\\payment-service\\PaymentService.csproj",
       "projectName": "PaymentService",
-      "projectPath": "C:\\Project\\Warehouse_management\\services\\payment-service\\PaymentService.csproj",
+      "projectPath": "D:\\Project\\Warehouse_management\\services\\payment-service\\PaymentService.csproj",
       "packagesPath": "C:\\Users\\ndvin\\.nuget\\packages\\",
-      "outputPath": "C:\\Project\\Warehouse_management\\services\\payment-service\\obj\\",
+      "outputPath": "D:\\Project\\Warehouse_management\\services\\payment-service\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
