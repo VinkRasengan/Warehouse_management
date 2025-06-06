@@ -7,25 +7,35 @@ A comprehensive microservices-based warehouse management system built with ASP.N
 This system follows a microservices architecture with the following services:
 
 ### Core Services
+
 - **API Gateway** - Central entry point using Ocelot for routing and JWT authentication
+- **User Service** - Manages user authentication, authorization, and user profiles (MongoDB)
 - **Product Service** - Manages product catalog, information, and attributes (name, description, price, size, color)
 - **Inventory Service** - Tracks stock levels, inventory movements, and low-stock alerts with Redis caching
 - **Order Service** - Handles order processing, status management (Pending, Confirmed, Shipped, Completed)
 - **Customer Service** - Manages customer information, profiles, purchase history, and loyalty points
 
 ### Business Services
+
 - **Payment Service** - Processes payments (cash, card, e-wallets), integrates with third-party providers (MoMo, bank APIs)
 - **Reporting Service** - Generates business reports (revenue, profit, inventory reports) by date range
 - **Notification Service** - Sends email/SMS/push notifications for orders, low inventory, etc.
 - **Alert Service** - Handles system alerts and notifications
 
+### Frontend
+
+- **React Web Application** - Modern responsive UI based on KiotViet design for warehouse management operations
+
 ## Tech Stack
 
 - **Backend**: ASP.NET Core 8.0
+- **Frontend**: React.js with modern UI components
 - **API Gateway**: Ocelot
 - **Authentication**: JWT Bearer tokens
-- **Database**: PostgreSQL (separate database per service)
-- **ORM**: Entity Framework Core
+- **Database**:
+  - PostgreSQL (for most microservices)
+  - MongoDB (for User Service)
+- **ORM**: Entity Framework Core (PostgreSQL), MongoDB Driver
 - **Message Broker**: RabbitMQ for async communication
 - **Cache**: Redis (for Inventory Service)
 - **Email**: MailKit/MimeKit (for Notification Service)
@@ -40,14 +50,16 @@ This system follows a microservices architecture with the following services:
 warehouse-management/
 ├── api-gateway-dotnet/       # API Gateway with Ocelot
 ├── services/
-│   ├── product-service/      # Product management (ASP.NET Core)
-│   ├── inventory-service/    # Inventory management (ASP.NET Core)
-│   ├── order-service/        # Order processing (ASP.NET Core)
-│   ├── customer-service/     # Customer management (ASP.NET Core)
-│   ├── payment-service/      # Payment processing (ASP.NET Core)
-│   ├── notification-service/ # Multi-channel notifications (ASP.NET Core)
-│   ├── reporting-service/    # Analytics and reporting (ASP.NET Core)
-│   └── alert-service/        # System alerts (ASP.NET Core)
+│   ├── user-service/         # User authentication & profiles (ASP.NET Core + MongoDB)
+│   ├── product-service/      # Product management (ASP.NET Core + PostgreSQL)
+│   ├── inventory-service/    # Inventory management (ASP.NET Core + PostgreSQL)
+│   ├── order-service/        # Order processing (ASP.NET Core + PostgreSQL)
+│   ├── customer-service/     # Customer management (ASP.NET Core + PostgreSQL)
+│   ├── payment-service/      # Payment processing (ASP.NET Core + PostgreSQL)
+│   ├── notification-service/ # Multi-channel notifications (ASP.NET Core + PostgreSQL)
+│   ├── reporting-service/    # Analytics and reporting (ASP.NET Core + PostgreSQL)
+│   └── alert-service/        # System alerts (ASP.NET Core + PostgreSQL)
+├── frontend/                 # React.js web application
 ├── shared/                   # Shared libraries and types
 ├── infra/
 │   └── k8s/                 # Kubernetes manifests
@@ -55,13 +67,32 @@ warehouse-management/
 └── docker-compose.yml       # Docker Compose configuration
 ```
 
+## 🚀 Deployment Scripts
+
+The project includes several PowerShell scripts for easy deployment:
+
+### Quick Deployment Options
+
+- **`deploy-local-simple.ps1`** - Run services locally without Docker
+- **`deploy-docker-simple.ps1`** - Deploy with Docker containers
+- **`deploy-working-demo.ps1`** - Deploy a working demo environment
+- **`start-system-simple.ps1`** - Start the complete system
+- **`stop-local-services.ps1`** - Stop all running services
+
+### Frontend Scripts
+
+- **`start-frontend-simple.ps1`** - Start React frontend only
+- **`start-backend-simple.ps1`** - Start backend services only
+
 ## Getting Started
 
 ### Prerequisites
 
 - Docker and Docker Compose
 - .NET 8.0 SDK (for local development)
+- Node.js 18+ (for frontend development)
 - PostgreSQL (if running locally)
+- MongoDB (if running locally)
 
 ### Quick Start
 
@@ -75,12 +106,18 @@ warehouse-management/
 2. Start all services with Docker Compose:
 
    ```bash
+   # Using Docker Compose directly
    docker-compose up -d --build
+
+   # Or use the deployment script (recommended)
+   .\deploy-docker-simple.ps1 -Environment development -Build
    ```
 
 3. Access the services:
 
    - **API Gateway**: <http://localhost:5000> (HTTP) / <https://localhost:5001> (HTTPS)
+   - **Frontend**: <http://localhost:3000> (React Web App)
+   - **User Service**: <http://localhost:5100>
    - **Product Service**: <http://localhost:5101>
    - **Inventory Service**: <http://localhost:5102>
    - **Order Service**: <http://localhost:5103>
@@ -93,6 +130,7 @@ warehouse-management/
 ### Infrastructure Services
 
 - **RabbitMQ Management**: <http://localhost:15672> (admin/password)
+- **MongoDB**: localhost:27017 (admin/admin123) - User Service
 - **PostgreSQL Databases**:
   - Product DB: localhost:5432
   - Inventory DB: localhost:5433
@@ -128,6 +166,7 @@ To access protected endpoints, you need to authenticate:
 Each service provides Swagger documentation:
 
 - API Gateway: <http://localhost:5000/swagger>
+- User Service: <http://localhost:5100/swagger>
 - Product Service: <http://localhost:5101/swagger>
 - Inventory Service: <http://localhost:5102/swagger>
 - Order Service: <http://localhost:5103/swagger>
@@ -141,6 +180,8 @@ Each service provides Swagger documentation:
 
 All services are accessible through the API Gateway with the following routes:
 
+- `/api/auth/*` → User Service (Authentication & Authorization)
+- `/api/users/*` → User Service (User Management)
 - `/api/products/*` → Product Service
 - `/api/inventory/*` → Inventory Service
 - `/api/orders/*` → Order Service
@@ -209,27 +250,34 @@ Services communicate asynchronously via RabbitMQ:
 Services use environment variables for configuration:
 
 ```bash
-# Database
+# PostgreSQL Database (Most Services)
 ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=service_db;Username=postgres;Password=password
 
-# JWT
+# MongoDB Database (User Service)
+MongoDbSettings__ConnectionString=mongodb://admin:admin123@localhost:27017
+MongoDbSettings__DatabaseName=warehouse_management
+
+# JWT Configuration
 JWT__Key=your-super-secret-key-that-is-at-least-32-characters-long
 JWT__Issuer=WarehouseManagement
 JWT__Audience=WarehouseManagement
 
-# RabbitMQ
+# RabbitMQ Message Broker
 RabbitMQ__HostName=localhost
 RabbitMQ__Port=5672
-RabbitMQ__UserName=guest
-RabbitMQ__Password=guest
+RabbitMQ__UserName=admin
+RabbitMQ__Password=password
 
-# Email (Notification Service)
+# Redis Cache
+Redis__ConnectionString=localhost:6379
+
+# Email Configuration (Notification Service)
 Email__SmtpHost=smtp.gmail.com
 Email__SmtpPort=587
 Email__Username=your-email@gmail.com
 Email__Password=your-app-password
 
-# SMS (Notification Service)
+# SMS Configuration (Notification Service)
 Twilio__AccountSid=your-twilio-account-sid
 Twilio__AuthToken=your-twilio-auth-token
 Twilio__FromNumber=+1234567890
@@ -269,12 +317,16 @@ dotnet test
 
 ## Deployment
 
+For detailed deployment instructions, see [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md).
+
 ### Docker Compose (Development)
+
 ```bash
 docker-compose up -d
 ```
 
 ### Kubernetes (Production)
+
 Kubernetes manifests are available in the `/infra/k8s` directory.
 
 ## Contributing
