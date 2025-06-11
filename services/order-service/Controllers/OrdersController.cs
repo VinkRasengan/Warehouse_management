@@ -7,7 +7,7 @@ namespace OrderService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+// [Authorize] // Disabled for testing
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;

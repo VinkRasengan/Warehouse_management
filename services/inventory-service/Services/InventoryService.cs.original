@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using InventoryService.Data;
 using InventoryService.DTOs;
 using InventoryService.Models;
+using System.Text.Json;
 
 namespace InventoryService.Services;
 
@@ -11,24 +13,47 @@ public class InventoryService : IInventoryService
     private readonly InventoryDbContext _context;
     private readonly IMapper _mapper;
     private readonly ILogger<InventoryService> _logger;
+    private readonly IRabbitMQService _rabbitMQService;
+    private readonly IDistributedCache _cache;
 
     public InventoryService(
         InventoryDbContext context,
         IMapper mapper,
-        ILogger<InventoryService> logger)
+        ILogger<InventoryService> logger,
+        IRabbitMQService rabbitMQService,
+        IDistributedCache cache)
     {
         _context = context;
         _mapper = mapper;
         _logger = logger;
+        _rabbitMQService = rabbitMQService;
+        _cache = cache;
     }
 
     public async Task<IEnumerable<InventoryItemDto>> GetAllInventoryAsync()
     {
+        var cacheKey = "inventory:all";
+        var cachedData = await _cache.GetStringAsync(cacheKey);
+        
+        if (!string.IsNullOrEmpty(cachedData))
+        {
+            return JsonSerializer.Deserialize<IEnumerable<InventoryItemDto>>(cachedData) ?? new List<InventoryItemDto>();
+        }
+
         var items = await _context.InventoryItems
             .Include(i => i.StockMovements.OrderByDescending(m => m.CreatedAt).Take(5))
             .ToListAsync();
 
-        return _mapper.Map<IEnumerable<InventoryItemDto>>(items);
+        var result = _mapper.Map<IEnumerable<InventoryItemDto>>(items);
+        
+        // Cache for 5 minutes
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        };
+        await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(result), cacheOptions);
+
+        return result;
     }
 
     public async Task<InventoryItemDto?> GetInventoryByIdAsync(int id)
@@ -42,11 +67,30 @@ public class InventoryService : IInventoryService
 
     public async Task<InventoryItemDto?> GetInventoryByProductIdAsync(int productId)
     {
+        var cacheKey = $"inventory:product:{productId}";
+        var cachedData = await _cache.GetStringAsync(cacheKey);
+        
+        if (!string.IsNullOrEmpty(cachedData))
+        {
+            return JsonSerializer.Deserialize<InventoryItemDto>(cachedData);
+        }
+
         var item = await _context.InventoryItems
             .Include(i => i.StockMovements.OrderByDescending(m => m.CreatedAt).Take(10))
             .FirstOrDefaultAsync(i => i.ProductId == productId);
 
-        return item != null ? _mapper.Map<InventoryItemDto>(item) : null;
+        if (item == null) return null;
+
+        var result = _mapper.Map<InventoryItemDto>(item);
+        
+        // Cache for 2 minutes
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
+        };
+        await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(result), cacheOptions);
+
+        return result;
     }
 
     public async Task<InventoryItemDto?> GetInventoryBySkuAsync(string sku)
@@ -84,6 +128,17 @@ public class InventoryService : IInventoryService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Inventory item created for ProductId: {ProductId}", inventoryItem.ProductId);
+
+        // Clear cache
+        await InvalidateInventoryCache();
+
+        // Publish event
+        await _rabbitMQService.PublishAsync("inventory.created", new 
+        { 
+            ProductId = inventoryItem.ProductId, 
+            SKU = inventoryItem.SKU,
+            Quantity = inventoryItem.Quantity 
+        });
 
         return _mapper.Map<InventoryItemDto>(inventoryItem);
     }
@@ -133,6 +188,18 @@ public class InventoryService : IInventoryService
 
         _logger.LogInformation("Inventory item updated for ProductId: {ProductId}", inventoryItem.ProductId);
 
+        // Clear cache
+        await InvalidateInventoryCache(inventoryItem.ProductId);
+
+        // Publish event
+        await _rabbitMQService.PublishAsync("inventory.updated", new 
+        { 
+            ProductId = inventoryItem.ProductId, 
+            SKU = inventoryItem.SKU,
+            OldQuantity = oldQuantity,
+            NewQuantity = inventoryItem.Quantity 
+        });
+
         return _mapper.Map<InventoryItemDto>(inventoryItem);
     }
 
@@ -146,10 +213,19 @@ public class InventoryService : IInventoryService
 
         _logger.LogInformation("Inventory item deleted for ProductId: {ProductId}", inventoryItem.ProductId);
 
+        // Clear cache
+        await InvalidateInventoryCache(inventoryItem.ProductId);
+
+        // Publish event
+        await _rabbitMQService.PublishAsync("inventory.deleted", new 
+        { 
+            ProductId = inventoryItem.ProductId, 
+            SKU = inventoryItem.SKU 
+        });
+
         return true;
     }
 
-    // Implement other required methods with simplified logic...
     public async Task<bool> AdjustStockAsync(StockAdjustmentDto adjustmentDto)
     {
         var inventoryItem = await _context.InventoryItems
@@ -166,11 +242,12 @@ public class InventoryService : IInventoryService
             _ => oldQuantity
         };
 
-        if (newQuantity < 0) return false;
+        if (newQuantity < 0) return false; // Cannot have negative stock
 
         inventoryItem.Quantity = newQuantity;
         inventoryItem.LastUpdated = DateTime.UtcNow;
 
+        // Create stock movement
         var movement = new StockMovement
         {
             InventoryItemId = inventoryItem.Id,
@@ -187,7 +264,22 @@ public class InventoryService : IInventoryService
         _context.StockMovements.Add(movement);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Stock adjusted for ProductId: {ProductId}", adjustmentDto.ProductId);
+        _logger.LogInformation("Stock adjusted for ProductId: {ProductId}, Type: {MovementType}, Quantity: {Quantity}", 
+            adjustmentDto.ProductId, adjustmentDto.MovementType, adjustmentDto.Quantity);
+
+        // Clear cache
+        await InvalidateInventoryCache(inventoryItem.ProductId);
+
+        // Publish event
+        await _rabbitMQService.PublishAsync("inventory.stock_adjusted", new 
+        { 
+            ProductId = inventoryItem.ProductId, 
+            SKU = inventoryItem.SKU,
+            MovementType = adjustmentDto.MovementType,
+            OldQuantity = oldQuantity,
+            NewQuantity = newQuantity,
+            IsLowStock = inventoryItem.IsLowStock
+        });
 
         return true;
     }
@@ -203,7 +295,38 @@ public class InventoryService : IInventoryService
         inventoryItem.ReservedQuantity += reservationDto.Quantity;
         inventoryItem.LastUpdated = DateTime.UtcNow;
 
+        // Create stock movement
+        var movement = new StockMovement
+        {
+            InventoryItemId = inventoryItem.Id,
+            MovementType = MovementTypes.RESERVED,
+            Quantity = reservationDto.Quantity,
+            PreviousQuantity = inventoryItem.ReservedQuantity - reservationDto.Quantity,
+            NewQuantity = inventoryItem.ReservedQuantity,
+            Reason = "Stock reservation",
+            Reference = reservationDto.Reference,
+            CreatedBy = reservationDto.CreatedBy,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.StockMovements.Add(movement);
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Stock reserved for ProductId: {ProductId}, Quantity: {Quantity}", 
+            reservationDto.ProductId, reservationDto.Quantity);
+
+        // Clear cache
+        await InvalidateInventoryCache(inventoryItem.ProductId);
+
+        // Publish event
+        await _rabbitMQService.PublishAsync("inventory.stock_reserved", new 
+        { 
+            ProductId = inventoryItem.ProductId, 
+            SKU = inventoryItem.SKU,
+            ReservedQuantity = reservationDto.Quantity,
+            AvailableQuantity = inventoryItem.AvailableQuantity
+        });
+
         return true;
     }
 
@@ -218,7 +341,38 @@ public class InventoryService : IInventoryService
         inventoryItem.ReservedQuantity -= quantity;
         inventoryItem.LastUpdated = DateTime.UtcNow;
 
+        // Create stock movement
+        var movement = new StockMovement
+        {
+            InventoryItemId = inventoryItem.Id,
+            MovementType = MovementTypes.RELEASED,
+            Quantity = quantity,
+            PreviousQuantity = inventoryItem.ReservedQuantity + quantity,
+            NewQuantity = inventoryItem.ReservedQuantity,
+            Reason = "Reservation released",
+            Reference = reference,
+            CreatedBy = "System",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.StockMovements.Add(movement);
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Reservation released for ProductId: {ProductId}, Quantity: {Quantity}", 
+            productId, quantity);
+
+        // Clear cache
+        await InvalidateInventoryCache(productId);
+
+        // Publish event
+        await _rabbitMQService.PublishAsync("inventory.reservation_released", new 
+        { 
+            ProductId = productId, 
+            SKU = inventoryItem.SKU,
+            ReleasedQuantity = quantity,
+            AvailableQuantity = inventoryItem.AvailableQuantity
+        });
+
         return true;
     }
 
@@ -297,5 +451,15 @@ public class InventoryService : IInventoryService
             .ToListAsync();
 
         return _mapper.Map<IEnumerable<InventoryItemDto>>(items);
+    }
+
+    private async Task InvalidateInventoryCache(int? productId = null)
+    {
+        await _cache.RemoveAsync("inventory:all");
+        
+        if (productId.HasValue)
+        {
+            await _cache.RemoveAsync($"inventory:product:{productId}");
+        }
     }
 }

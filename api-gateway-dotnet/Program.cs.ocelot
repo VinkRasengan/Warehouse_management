@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +20,6 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new() { Title = "Warehouse Management API Gateway", Version = "v1" });
 });
 
-// Add HttpClient for proxying requests
-builder.Services.AddHttpClient();
-
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -32,6 +31,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Add Ocelot with local configuration
+builder.Configuration.AddJsonFile("ocelot.local.json", optional: false, reloadOnChange: true);
+builder.Services.AddOcelot();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -40,71 +43,33 @@ app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
 
-// Service mapping
-var serviceMap = new Dictionary<string, string>
-{
-    { "/api/inventory", "http://localhost:5000" },
-    { "/api/orders", "http://localhost:5002" },
-    { "/api/customers", "http://localhost:5003" },
-    { "/api/payments", "http://localhost:5004" },
-    { "/api/notifications", "http://localhost:5005" },
-    { "/api/alerts", "http://localhost:5006" }
-};
-
-// Health check endpoint
+// Add health check endpoint before Ocelot
 app.MapGet("/health", () => "API Gateway is healthy");
 
-// Service status endpoint
-app.MapGet("/status", () => new { 
-    gateway = "healthy", 
-    timestamp = DateTime.UtcNow,
-    services = serviceMap
-});
-
-// Proxy middleware
-app.Use(async (context, next) =>
+// Add service status endpoint before Ocelot
+app.MapGet("/status", async () =>
 {
-    var path = context.Request.Path.Value;
-    
-    // Skip if it's a gateway endpoint
-    if (path == "/health" || path == "/status" || path.StartsWith("/swagger"))
+    var services = new Dictionary<string, object>
     {
-        await next();
-        return;
-    }
-    
-    // Find matching service
-    var service = serviceMap.FirstOrDefault(s => path.StartsWith(s.Key));
-    if (service.Key != null)
-    {
-        var httpClient = context.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient();
-        var targetUrl = service.Value + path;
-        
-        try
-        {
-            var response = await httpClient.GetAsync(targetUrl);
-            var content = await response.Content.ReadAsStringAsync();
-            
-            context.Response.StatusCode = (int)response.StatusCode;
-            context.Response.ContentType = response.Content.Headers.ContentType?.ToString() ?? "application/json";
-            await context.Response.WriteAsync(content);
-        }
-        catch (Exception ex)
-        {
-            context.Response.StatusCode = 503;
-            await context.Response.WriteAsync($"Service unavailable: {ex.Message}");
-        }
-    }
-    else
-    {
-        await next();
-    }
+        { "inventory-service", "http://localhost:5000" },
+        { "order-service", "http://localhost:5002" },
+        { "customer-service", "http://localhost:5003" },
+        { "payment-service", "http://localhost:5004" },
+        { "notification-service", "http://localhost:5005" },
+        { "alert-service", "http://localhost:5006" }
+    };
+
+    return new {
+        gateway = "healthy",
+        timestamp = DateTime.UtcNow,
+        services = services
+    };
 });
 
 app.MapControllers();
 
 Console.WriteLine("=================================");
-Console.WriteLine("Simple API Gateway Started!");
+Console.WriteLine("API Gateway Started!");
 Console.WriteLine("=================================");
 Console.WriteLine("Gateway URL: http://localhost:5001");
 Console.WriteLine("Swagger UI: http://localhost:5001/swagger");
@@ -120,5 +85,8 @@ Console.WriteLine("  GET  /api/payments      -> payment-service:5004");
 Console.WriteLine("  GET  /api/notifications -> notification-service:5005");
 Console.WriteLine("  GET  /api/alerts        -> alert-service:5006");
 Console.WriteLine("=================================");
+
+// Use Ocelot middleware (this will handle all other routes)
+await app.UseOcelot();
 
 app.Run();

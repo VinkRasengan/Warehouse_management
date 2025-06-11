@@ -1,4 +1,22 @@
-﻿using AutoMapper;
+# Create simplified inventory service without RabbitMQ and Redis dependencies
+Write-Host "Creating simplified Inventory Service" -ForegroundColor Blue
+
+Push-Location "services/inventory-service"
+
+# Backup original files
+if (-not (Test-Path "Services/InventoryService.cs.original")) {
+    Copy-Item "Services/InventoryService.cs" "Services/InventoryService.cs.original" -Force
+    Write-Host "Original InventoryService.cs backed up" -ForegroundColor Green
+}
+
+if (-not (Test-Path "Program.cs.original")) {
+    Copy-Item "Program.cs" "Program.cs.original" -Force
+    Write-Host "Original Program.cs backed up" -ForegroundColor Green
+}
+
+# Create simplified InventoryService without RabbitMQ and Redis
+$simplifiedService = @"
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using InventoryService.Data;
 using InventoryService.DTOs;
@@ -299,3 +317,13 @@ public class InventoryService : IInventoryService
         return _mapper.Map<IEnumerable<InventoryItemDto>>(items);
     }
 }
+"@
+
+# Write simplified service
+Set-Content -Path "Services/InventoryService.cs" -Value $simplifiedService -Encoding UTF8
+Write-Host "Created simplified InventoryService.cs" -ForegroundColor Green
+
+Write-Host "Files backed up and simplified versions created" -ForegroundColor Green
+Write-Host "You can now test the service without RabbitMQ/Redis dependencies" -ForegroundColor White
+
+Pop-Location

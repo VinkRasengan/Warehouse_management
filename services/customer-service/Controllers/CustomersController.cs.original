@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using CustomerService.DTOs;
 using CustomerService.Services;
@@ -7,7 +7,7 @@ namespace CustomerService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Disabled for testing
+    [Authorize]
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerService _customerService;
@@ -208,4 +208,3 @@ namespace CustomerService.Controllers
         }
     }
 }
-

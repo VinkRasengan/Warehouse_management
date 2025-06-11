@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaymentService.DTOs;
 using PaymentService.Models;
@@ -8,7 +8,7 @@ namespace PaymentService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Disabled for testing
+    [Authorize]
     public class PaymentsController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
@@ -152,4 +152,3 @@ namespace PaymentService.Controllers
         public string? Reason { get; set; }
     }
 }
-

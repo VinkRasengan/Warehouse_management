@@ -1,4 +1,17 @@
-﻿using Serilog;
+# Create Simple API Gateway without Ocelot
+Write-Host "Creating Simple API Gateway" -ForegroundColor Blue
+
+Push-Location "api-gateway-dotnet"
+
+# Backup current Program.cs
+if (-not (Test-Path "Program.cs.ocelot")) {
+    Copy-Item "Program.cs" "Program.cs.ocelot" -Force
+    Write-Host "Ocelot Program.cs backed up" -ForegroundColor Green
+}
+
+# Create simple API Gateway Program.cs
+$simpleProgram = @"
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -122,3 +135,13 @@ Console.WriteLine("  GET  /api/alerts        -> alert-service:5006");
 Console.WriteLine("=================================");
 
 app.Run();
+"@
+
+# Write simple Program.cs
+Set-Content -Path "Program.cs" -Value $simpleProgram -Encoding UTF8
+Write-Host "Created simple API Gateway Program.cs" -ForegroundColor Green
+
+Write-Host "Simple API Gateway setup completed!" -ForegroundColor Green
+Write-Host "You can now start the gateway with: dotnet run --urls http://localhost:5001" -ForegroundColor White
+
+Pop-Location

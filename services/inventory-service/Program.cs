@@ -29,6 +29,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<InventoryDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
+
 // Add custom services (without RabbitMQ for now)
 builder.Services.AddScoped<IInventoryService, InventoryService.Services.InventoryService>();
 

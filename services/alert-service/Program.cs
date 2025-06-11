@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using AlertService.Data;
-using AlertService.Services;
+﻿using Microsoft.EntityFrameworkCore;
+using alert-service.Data;
+using alert-service.Services;
 using Serilog;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,25 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "Alert Service API", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new()
-    {
-        Description = "JWT Authorization header using the Bearer scheme.",
-        Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    c.AddSecurityRequirement(new()
-    {
-        {
-            new()
-            {
-                Reference = new() { Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme, Id = "Bearer" }
-            },
-            new string[] {}
-        }
-    });
+    c.SwaggerDoc("v1", new() { Title = "alert-service API", Version = "v1" });
 });
 
 // Configure Entity Framework
@@ -47,39 +26,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AlertDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Configure JWT Authentication
-var jwtSecret = builder.Configuration["JWT__Secret"] ?? "your-jwt-secret-key-here-make-it-long-and-secure";
-var jwtIssuer = builder.Configuration["JWT__Issuer"] ?? "WarehouseManagement";
-var jwtAudience = builder.Configuration["JWT__Audience"] ?? "WarehouseManagement";
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
-        };
-    });
-
-builder.Services.AddAuthorization();
-
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
-// Add custom services
+// Add custom services (without RabbitMQ for now)
 builder.Services.AddScoped<IAlertService, AlertService.Services.AlertService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 // Add health checks
-builder.Services.AddHealthChecks()
-    .AddNpgSql(connectionString);
+builder.Services.AddHealthChecks();
 
 // Add CORS
 builder.Services.AddCors(options =>
@@ -95,16 +49,10 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.MapControllers();
 app.MapHealthChecks("/health");
 
@@ -114,5 +62,12 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<AlertDbContext>();
     context.Database.EnsureCreated();
 }
+
+Console.WriteLine("=================================");
+Console.WriteLine("alert-service Started!");
+Console.WriteLine("=================================");
+Console.WriteLine("Swagger UI: http://localhost:5006/swagger");
+Console.WriteLine("Health Check: http://localhost:5006/health");
+Console.WriteLine("=================================");
 
 app.Run();
