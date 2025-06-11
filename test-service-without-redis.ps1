@@ -1,4 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+# Test service without Redis dependency
+Write-Host "Testing Inventory Service without Redis" -ForegroundColor Blue
+
+Push-Location "services/inventory-service"
+
+# Backup original Program.cs if not already backed up
+if (-not (Test-Path "Program.cs.original")) {
+    Copy-Item "Program.cs" "Program.cs.original" -Force
+    Write-Host "Original Program.cs backed up" -ForegroundColor Green
+}
+
+# Create modified Program.cs without Redis
+$modifiedProgram = @"
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using InventoryService.Data;
@@ -73,3 +86,23 @@ Console.WriteLine("API Base: http://localhost:5000/api/inventory");
 Console.WriteLine("=================================");
 
 app.Run();
+"@
+
+# Write modified Program.cs
+Set-Content -Path "Program.cs" -Value $modifiedProgram -Encoding UTF8
+Write-Host "Modified Program.cs created (without Redis)" -ForegroundColor Green
+
+Write-Host "`nStarting Inventory Service..." -ForegroundColor Cyan
+Write-Host "Press Ctrl+C to stop" -ForegroundColor Yellow
+
+try {
+    # Start the service
+    dotnet run --urls "http://localhost:5000"
+}
+finally {
+    # Restore original Program.cs
+    Write-Host "`nRestoring original Program.cs..." -ForegroundColor Yellow
+    Copy-Item "Program.cs.original" "Program.cs" -Force
+    Write-Host "Original Program.cs restored" -ForegroundColor Green
+    Pop-Location
+}

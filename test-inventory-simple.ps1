@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+# Simple test for inventory service without Redis/RabbitMQ
+Write-Host "Testing Inventory Service (Simplified)" -ForegroundColor Blue
+
+# Create a temporary Program.cs for testing
+$tempProgramCs = @"
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using InventoryService.Data;
@@ -11,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.File("logs/inventory-service-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -19,17 +23,14 @@ builder.Host.UseSerilog();
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new() { Title = "Inventory Service API", Version = "v1" });
-});
+builder.Services.AddSwaggerGen();
 
 // Configure Entity Framework
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<InventoryDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Add custom services (without RabbitMQ for now)
+// Add custom services (without RabbitMQ)
 builder.Services.AddScoped<IInventoryService, InventoryService.Services.InventoryService>();
 
 // Add health checks (without Redis)
@@ -64,12 +65,40 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
-Console.WriteLine("=================================");
-Console.WriteLine("Inventory Service Started!");
-Console.WriteLine("=================================");
+Console.WriteLine("Inventory Service started on http://localhost:5000");
 Console.WriteLine("Swagger UI: http://localhost:5000/swagger");
 Console.WriteLine("Health Check: http://localhost:5000/health");
-Console.WriteLine("API Base: http://localhost:5000/api/inventory");
-Console.WriteLine("=================================");
 
 app.Run();
+"@
+
+# Backup original Program.cs
+Push-Location "services/inventory-service"
+
+if (Test-Path "Program.cs.backup") {
+    Write-Host "Backup already exists, restoring original first..." -ForegroundColor Yellow
+    Copy-Item "Program.cs.backup" "Program.cs" -Force
+}
+
+Copy-Item "Program.cs" "Program.cs.backup" -Force
+Write-Host "Original Program.cs backed up" -ForegroundColor Green
+
+# Create simplified version
+Set-Content -Path "Program.cs" -Value $tempProgramCs -Encoding UTF8
+Write-Host "Created simplified Program.cs" -ForegroundColor Green
+
+# Try to run the service
+Write-Host "Starting simplified inventory service..." -ForegroundColor Cyan
+Write-Host "Press Ctrl+C to stop the service" -ForegroundColor Yellow
+
+try {
+    dotnet run --urls "http://localhost:5000"
+}
+finally {
+    # Restore original Program.cs
+    Write-Host "`nRestoring original Program.cs..." -ForegroundColor Yellow
+    Copy-Item "Program.cs.backup" "Program.cs" -Force
+    Remove-Item "Program.cs.backup" -Force
+    Write-Host "Original Program.cs restored" -ForegroundColor Green
+    Pop-Location
+}
