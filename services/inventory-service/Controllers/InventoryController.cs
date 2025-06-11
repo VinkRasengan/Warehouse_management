@@ -282,6 +282,33 @@ public class InventoryController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    [HttpGet("dashboard/stats")]
+    public async Task<ActionResult<object>> GetDashboardStats()
+    {
+        try
+        {
+            var report = await _inventoryService.GetInventoryReportAsync();
+            var lowStockAlerts = await _inventoryService.GetLowStockAlertsAsync();
+
+            var stats = new
+            {
+                totalInventoryItems = report.TotalItems,
+                totalOrders = 0, // Will be populated by order service
+                totalCustomers = 0, // Will be populated by customer service
+                totalRevenue = 0.0, // Will be populated by order service
+                lowStockItems = lowStockAlerts.Count(),
+                recentOrders = new List<object>()
+            };
+
+            return Ok(stats);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting dashboard stats");
+            return StatusCode(500, "Internal server error");
+        }
+    }
 }
 
 public class ReleaseReservationRequest
