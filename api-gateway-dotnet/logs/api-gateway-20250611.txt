@@ -1,0 +1,19 @@
+2025-06-11 14:11:30.172 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-06-11 14:11:30.455 +07:00 [INF] Now listening on: http://localhost:5000
+2025-06-11 14:11:30.459 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-06-11 14:11:30.461 +07:00 [INF] Hosting environment: Production
+2025-06-11 14:11:30.462 +07:00 [INF] Content root path: D:\Project\Warehouse_management\api-gateway-dotnet
+2025-06-11 14:17:12.756 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-06-11 14:17:12.823 +07:00 [INF] Now listening on: http://localhost:5000
+2025-06-11 14:17:12.826 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-06-11 14:17:12.827 +07:00 [INF] Hosting environment: Production
+2025-06-11 14:17:12.827 +07:00 [INF] Content root path: D:\Project\Warehouse_management\api-gateway-dotnet
+2025-06-11 14:25:19.075 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-06-11 14:25:19.177 +07:00 [INF] Now listening on: http://localhost:5000
+2025-06-11 14:25:19.180 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-06-11 14:25:19.181 +07:00 [INF] Hosting environment: Production
+2025-06-11 14:25:19.181 +07:00 [INF] Content root path: D:\Project\Warehouse_management\api-gateway-dotnet
+2025-06-11 14:29:09.185 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5000/api/auth/login - application/json 53
+2025-06-11 14:29:10.465 +07:00 [WRN] requestId: 0HND8N6JQAGAI:00000001, previousRequestId: No PreviousRequestId, message: 'DownstreamRouteFinderMiddleware setting pipeline errors. IDownstreamRouteFinder returned Error Code: UnableToFindDownstreamRouteError Message: Failed to match Route configuration for upstream path: /api/auth/login, verb: POST.'
+2025-06-11 14:29:10.467 +07:00 [WRN] requestId: 0HND8N6JQAGAI:00000001, previousRequestId: No PreviousRequestId, message: 'Error Code: UnableToFindDownstreamRouteError Message: Failed to match Route configuration for upstream path: /api/auth/login, verb: POST. errors found in ResponderMiddleware. Setting error response for request path:/api/auth/login, request method: POST'
+2025-06-11 14:29:10.477 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5000/api/auth/login - 404 0 null 1293.7241ms

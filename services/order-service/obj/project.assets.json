@@ -3846,11 +3846,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Project\\Warehouse_management\\services\\order-service\\OrderService.csproj",
+      "projectUniqueName": "D:\\Project\\Warehouse_management\\services\\order-service\\OrderService.csproj",
       "projectName": "OrderService",
-      "projectPath": "C:\\Project\\Warehouse_management\\services\\order-service\\OrderService.csproj",
+      "projectPath": "D:\\Project\\Warehouse_management\\services\\order-service\\OrderService.csproj",
       "packagesPath": "C:\\Users\\ndvin\\.nuget\\packages\\",
-      "outputPath": "C:\\Project\\Warehouse_management\\services\\order-service\\obj\\",
+      "outputPath": "D:\\Project\\Warehouse_management\\services\\order-service\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

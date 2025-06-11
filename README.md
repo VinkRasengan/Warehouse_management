@@ -59,6 +59,7 @@ warehouse-management/
 │   ├── notification-service/ # Multi-channel notifications (ASP.NET Core + PostgreSQL)
 │   ├── reporting-service/    # Analytics and reporting (ASP.NET Core + PostgreSQL)
 │   └── alert-service/        # System alerts (ASP.NET Core + PostgreSQL)
+├── simple-user-service/     # Simplified user service (no MongoDB dependency)
 ├── frontend/                 # React.js web application
 ├── shared/                   # Shared libraries and types
 ├── infra/
@@ -146,12 +147,32 @@ The project includes several PowerShell scripts for easy deployment:
 
 To access protected endpoints, you need to authenticate:
 
+#### Demo Accounts Available
+
+The system includes pre-configured demo accounts for testing:
+
+| Email/Username | Password | Role | Description |
+|----------------|----------|------|-------------|
+| `admin@warehouse.com` | `admin123` | Admin | Full system access |
+| `manager@warehouse.com` | `manager123` | Manager | Management operations |
+| `staff@warehouse.com` | `staff123` | Staff | Basic operations |
+| `demo` | `demo` | User | Demo user account |
+| `admin` | `admin` | Admin | Simple admin account |
+
+#### Login Process
+
 1. **Login** to get JWT token:
 
    ```bash
-   curl -X POST http://localhost:5000/api/auth/login \
+   # Using email
+   curl -X POST http://localhost:5100/api/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"username": "admin", "password": "password"}'
+     -d '{"email": "admin@warehouse.com", "password": "admin123"}'
+
+   # Using username
+   curl -X POST http://localhost:5100/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username": "demo", "password": "demo"}'
    ```
 
 2. **Use the token** in subsequent requests:
@@ -160,6 +181,10 @@ To access protected endpoints, you need to authenticate:
    curl -X GET http://localhost:5000/api/products \
      -H "Authorization: Bearer YOUR_JWT_TOKEN"
    ```
+
+#### Frontend Login
+
+Access the web interface at http://localhost:3000 and use any of the demo accounts above.
 
 ### API Documentation
 
@@ -319,15 +344,112 @@ dotnet test
 
 For detailed deployment instructions, see [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md).
 
-### Docker Compose (Development)
+### Quick Deployment Options
 
-```bash
-docker-compose up -d
+#### Option 1: Local Development (Recommended for Testing)
+```powershell
+# Start all services locally
+.\deploy-local-simple.ps1
+
+# Stop all services
+.\stop-local-services.ps1
 ```
 
-### Kubernetes (Production)
+#### Option 2: Docker Compose (Development)
+```bash
+# Start with Docker
+docker-compose up -d --build
 
+# Or use deployment script
+.\deploy-docker-simple.ps1 -Environment development -Build
+```
+
+#### Option 3: Kubernetes (Production)
 Kubernetes manifests are available in the `/infra/k8s` directory.
+
+### Troubleshooting
+
+#### Common Issues
+
+**1. User Service Login Issues**
+- **Problem**: Cannot login with demo accounts
+- **Cause**: User Service requires MongoDB
+- **Solution**:
+  ```bash
+  # Option A: Use Simple User Service (no MongoDB required)
+  cd simple-user-service
+  dotnet run --urls "http://localhost:5100"
+
+  # Option B: Start MongoDB with Docker
+  docker run -d --name mongodb -p 27017:27017 \
+    -e MONGO_INITDB_ROOT_USERNAME=admin \
+    -e MONGO_INITDB_ROOT_PASSWORD=admin123 mongo:7
+  ```
+
+**2. Frontend Not Starting**
+- **Problem**: Frontend doesn't start automatically
+- **Solution**:
+  ```bash
+  cd frontend
+  npm install
+  npm start
+  ```
+
+**3. Port Conflicts**
+- **Problem**: Services fail to start due to port conflicts
+- **Solution**:
+  ```powershell
+  # Check what's using the port
+  netstat -ano | findstr :5000
+
+  # Stop conflicting processes
+  .\stop-local-services.ps1
+  ```
+
+**4. Database Connection Issues**
+- **Problem**: Services can't connect to databases
+- **Solution**: Ensure PostgreSQL, MongoDB, Redis are running
+  ```bash
+  # Start infrastructure with Docker
+  docker-compose up -d mongodb redis rabbitmq postgres-product postgres-inventory
+  ```
+
+## Architecture Decisions
+
+### Why Microservices?
+- **Scalability**: Each service can be scaled independently
+- **Technology Diversity**: Different services can use optimal tech stacks
+- **Team Independence**: Teams can work on services independently
+- **Fault Isolation**: Failure in one service doesn't bring down the entire system
+
+### Why Ocelot Gateway?
+- **Native .NET Integration**: Seamless integration with ASP.NET Core ecosystem
+- **Configuration-Based**: Easy to configure and maintain routing rules
+- **Built-in Features**: Authentication, rate limiting, load balancing out of the box
+- **Developer Experience**: Excellent debugging and development experience
+
+### Database per Service Pattern
+- **Data Isolation**: Each service owns its data
+- **Technology Choice**: Services can choose optimal database technology
+- **Independent Deployment**: Database schema changes don't affect other services
+- **Scalability**: Databases can be scaled independently
+
+## Best Practices Implemented
+
+- **API Versioning**: All APIs support versioning for backward compatibility
+- **Health Checks**: Every service exposes health check endpoints
+- **Structured Logging**: Consistent logging across all services using Serilog
+- **Configuration Management**: Environment-specific configurations
+- **Error Handling**: Consistent error responses across all services
+- **Security**: JWT-based authentication with proper token validation
+- **Documentation**: Swagger/OpenAPI documentation for all services
+
+## Performance Considerations
+
+- **Caching**: Redis caching implemented in Inventory Service
+- **Async Communication**: RabbitMQ for non-blocking service communication
+- **Connection Pooling**: Database connection pooling for optimal performance
+- **Load Balancing**: API Gateway supports load balancing across service instances
 
 ## Contributing
 

@@ -1,0 +1,15 @@
+2025-06-11 14:11:40.770 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-06-11 14:11:40.900 +07:00 [INF] Now listening on: http://localhost:5101
+2025-06-11 14:11:40.905 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-06-11 14:11:40.906 +07:00 [INF] Hosting environment: Production
+2025-06-11 14:11:40.906 +07:00 [INF] Content root path: D:\Project\Warehouse_management\services\product-service
+2025-06-11 14:17:20.929 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-06-11 14:17:21.020 +07:00 [INF] Now listening on: http://localhost:5101
+2025-06-11 14:17:21.025 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-06-11 14:17:21.026 +07:00 [INF] Hosting environment: Production
+2025-06-11 14:17:21.027 +07:00 [INF] Content root path: D:\Project\Warehouse_management\services\product-service
+2025-06-11 14:25:30.188 +07:00 [INF] User profile is available. Using 'C:\Users\ndvin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-06-11 14:25:30.409 +07:00 [INF] Now listening on: http://localhost:5101
+2025-06-11 14:25:30.415 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-06-11 14:25:30.418 +07:00 [INF] Hosting environment: Production
+2025-06-11 14:25:30.420 +07:00 [INF] Content root path: D:\Project\Warehouse_management\services\product-service
