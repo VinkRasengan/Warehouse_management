@@ -4,11 +4,15 @@
 param(
     [switch]$SkipBuild,
     [switch]$SkipDatabases,
+    [switch]$OpenBrowser,
     [string]$Environment = "Development"
 )
 
 Write-Host "Starting Local Warehouse Management System Deployment" -ForegroundColor Green
 Write-Host "Environment: $Environment" -ForegroundColor Cyan
+if ($OpenBrowser) {
+    Write-Host "Auto-open browsers: Enabled" -ForegroundColor Cyan
+}
 
 # Function to check if port is available
 function Test-Port {
@@ -34,7 +38,7 @@ function Start-Service {
     Write-Host "Starting $ServiceName on port $Port..." -ForegroundColor Yellow
 
     if (Test-Port $Port) {
-        Write-Host "Port $Port is already in use. Skipping $ServiceName" -ForegroundColor Orange
+        Write-Host "Port $Port is already in use. Skipping $ServiceName" -ForegroundColor Yellow
         return
     }
     
@@ -57,6 +61,56 @@ function Start-Service {
     return $process
 }
 
+# Function to check if a URL is accessible
+function Test-UrlAccessible {
+    param([string]$Url, [int]$TimeoutSeconds = 30)
+
+    $timeout = (Get-Date).AddSeconds($TimeoutSeconds)
+    while ((Get-Date) -lt $timeout) {
+        try {
+            $response = Invoke-WebRequest -Uri $Url -Method GET -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop
+            if ($response.StatusCode -eq 200) {
+                return $true
+            }
+        }
+        catch {
+            # Continue trying
+        }
+        Start-Sleep -Seconds 2
+    }
+    return $false
+}
+
+# Function to open browser URLs
+function Open-BrowserUrls {
+    Write-Host "`nChecking service availability and opening browsers..." -ForegroundColor Yellow
+
+    # Check API Gateway
+    Write-Host "Checking API Gateway (http://localhost:5000)..." -ForegroundColor Gray
+    if (Test-UrlAccessible -Url "http://localhost:5000" -TimeoutSeconds 15) {
+        Write-Host "✅ API Gateway is ready!" -ForegroundColor Green
+        Start-Process "http://localhost:5000"
+        Write-Host "🌐 Opened API Gateway in browser" -ForegroundColor Cyan
+    } else {
+        Write-Host "⚠️  API Gateway not ready yet" -ForegroundColor Yellow
+        Write-Host "   You can manually open: http://localhost:5000" -ForegroundColor Gray
+    }
+
+    # Wait a moment before checking frontend
+    Start-Sleep -Seconds 3
+
+    # Check Frontend
+    Write-Host "Checking Frontend (http://localhost:3000)..." -ForegroundColor Gray
+    if (Test-UrlAccessible -Url "http://localhost:3000" -TimeoutSeconds 15) {
+        Write-Host "✅ Frontend is ready!" -ForegroundColor Green
+        Start-Process "http://localhost:3000"
+        Write-Host "🌐 Opened Frontend in browser" -ForegroundColor Cyan
+    } else {
+        Write-Host "⚠️  Frontend not ready yet" -ForegroundColor Yellow
+        Write-Host "   You can manually open: http://localhost:3000" -ForegroundColor Gray
+    }
+}
+
 # Check prerequisites
 Write-Host "`nChecking prerequisites..." -ForegroundColor Blue
 
@@ -74,7 +128,7 @@ try {
     $nodeVersion = node --version
     Write-Host "Node.js: $nodeVersion" -ForegroundColor Green
 } catch {
-    Write-Host "Node.js not found. Frontend won't be available" -ForegroundColor Orange
+    Write-Host "Node.js not found. Frontend won't be available" -ForegroundColor Yellow
 }
 
 # Build services if not skipped
@@ -107,7 +161,7 @@ if (-not $SkipBuild) {
             }
             Set-Location $PSScriptRoot
         } else {
-            Write-Host "Service not found: $service" -ForegroundColor Orange
+            Write-Host "Service not found: $service" -ForegroundColor Yellow
         }
     }
 
@@ -175,7 +229,7 @@ try {
         Write-Host "Frontend started successfully" -ForegroundColor Green
     }
 } catch {
-    Write-Host "Could not start frontend" -ForegroundColor Orange
+    Write-Host "Could not start frontend" -ForegroundColor Yellow
 }
 
 # Display service URLs
@@ -204,5 +258,12 @@ Write-Host "`nTo stop all services:" -ForegroundColor Red
 Write-Host "  Run: .\stop-local-services.ps1" -ForegroundColor Gray
 
 Write-Host "`nDeployment completed successfully!" -ForegroundColor Green
-Write-Host "Open http://localhost:5000 to access the API Gateway" -ForegroundColor Cyan
-Write-Host "Open http://localhost:3000 to access the Frontend (if available)" -ForegroundColor Cyan
+
+# Auto-open browsers if requested or by default
+if ($OpenBrowser -or $true) {  # Default to true for better UX
+    Open-BrowserUrls
+} else {
+    Write-Host "Open http://localhost:5000 to access the API Gateway" -ForegroundColor Cyan
+    Write-Host "Open http://localhost:3000 to access the Frontend (if available)" -ForegroundColor Cyan
+    Write-Host "`nTo auto-open browsers next time, use: .\deploy-local-simple.ps1 -OpenBrowser" -ForegroundColor Gray
+}

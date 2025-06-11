@@ -348,8 +348,17 @@ For detailed deployment instructions, see [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE
 
 #### Option 1: Local Development (Recommended for Testing)
 ```powershell
-# Start all services locally
+# Start all services locally (auto-opens browser)
 .\deploy-local-simple.ps1
+
+# Start services without opening browser
+.\deploy-local-simple.ps1 -OpenBrowser:$false
+
+# Skip build and database setup
+.\deploy-local-simple.ps1 -SkipBuild -SkipDatabases
+
+# Open services in browser (if already running)
+.\open-services.ps1
 
 # Stop all services
 .\stop-local-services.ps1

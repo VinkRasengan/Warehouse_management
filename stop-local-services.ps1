@@ -36,7 +36,7 @@ function Stop-ProcessesByPort {
                 }
             }
         } catch {
-            Write-Host "Could not stop process on port $port" -ForegroundColor Orange
+            Write-Host "Could not stop process on port $port" -ForegroundColor Yellow
         }
     }
 }
