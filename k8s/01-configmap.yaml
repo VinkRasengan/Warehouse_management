@@ -1,0 +1,13 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: warehouse-config
+  namespace: warehouse-system
+data:
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_DB: "warehouse_main"
+  POSTGRES_USER: "warehouse_user"
+  REDIS_HOST: "redis-service"
+  RABBITMQ_HOST: "rabbitmq-service"
+  RABBITMQ_USER: "warehouse_user"
+  ASPNETCORE_ENVIRONMENT: "Production"

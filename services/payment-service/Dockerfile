@@ -1,18 +1,17 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["services/payment-service/PaymentService.csproj", "services/payment-service/"]
-RUN dotnet restore "services/payment-service/PaymentService.csproj"
+COPY ["*.csproj", "./"]
+RUN dotnet restore
 COPY . .
-WORKDIR "/src/services/payment-service"
-RUN dotnet build "PaymentService.csproj" -c Release -o /app/build
+RUN dotnet build -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "PaymentService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

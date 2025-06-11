@@ -1,4 +1,10 @@
-﻿version: '3.8'
+# Docker Setup for Warehouse Management System
+Write-Host "DOCKER SETUP - WAREHOUSE MANAGEMENT SYSTEM" -ForegroundColor Blue
+Write-Host "===========================================" -ForegroundColor Blue
+
+# Create docker-compose.yml for the entire system
+$dockerCompose = @"
+version: '3.8'
 
 services:
   # Database Services
@@ -209,3 +215,14 @@ volumes:
 networks:
   warehouse-network:
     driver: bridge
+"@
+
+Write-Host "Creating docker-compose.yml..." -ForegroundColor Yellow
+Set-Content -Path "docker-compose.yml" -Value $dockerCompose -Encoding UTF8
+Write-Host "  [OK] docker-compose.yml created" -ForegroundColor Green
+
+Write-Host "`nDocker setup completed!" -ForegroundColor Green
+Write-Host "Next steps:" -ForegroundColor White
+Write-Host "  1. Run: docker-compose up --build" -ForegroundColor Gray
+Write-Host "  2. Wait for all services to start" -ForegroundColor Gray
+Write-Host "  3. Access services on localhost ports" -ForegroundColor Gray
