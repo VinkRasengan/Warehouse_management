@@ -1,8 +1,0 @@
-D:\Project\Warehouse_management\services\reporting-service\obj\Release\net8.0\ReportingService.csproj.AssemblyReference.cache
-D:\Project\Warehouse_management\services\reporting-service\obj\Release\net8.0\ReportingService.GeneratedMSBuildEditorConfig.editorconfig
-D:\Project\Warehouse_management\services\reporting-service\obj\Release\net8.0\ReportingService.AssemblyInfoInputs.cache
-D:\Project\Warehouse_management\services\reporting-service\obj\Release\net8.0\ReportingService.AssemblyInfo.cs
-D:\Project\Warehouse_management\services\reporting-service\obj\Release\net8.0\ReportingService.csproj.CoreCompileInputs.cache
-D:\Project\Warehouse_management\services\reporting-service\obj\Release\net8.0\ReportingService.MvcApplicationPartsAssemblyInfo.cs
-D:\Project\Warehouse_management\services\reporting-service\obj\Release\net8.0\ReportingService.MvcApplicationPartsAssemblyInfo.cache
-D:\Project\Warehouse_management\services\reporting-service\obj\Release\net8.0\ReportingService.sourcelink.json

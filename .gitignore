@@ -304,3 +304,74 @@ monitoring/logs/
 # Performance test results
 performance-results/
 load-test-results/
+
+# Deployment generated files and scripts
+# Auto-generated deployment scripts
+cleanup-build-files.ps1
+configure-services.ps1
+create-shortcuts.ps1
+debug-system.ps1
+demo-auto-open.ps1
+deploy-docker-simple.ps1
+deploy-full-stack.ps1
+deploy-local-simple.ps1
+deploy-production.ps1
+deploy-public.sh
+deploy-working-demo.ps1
+deployment-dashboard.html
+host-network.ps1
+open-services.ps1
+run-all-services.ps1
+run-system.bat
+setup-auto-start.ps1
+setup-complete-system.ps1
+setup-infrastructure.ps1
+start-backend-only.bat
+start-backend-simple.ps1
+start-frontend-only.bat
+start-frontend-only.ps1
+start-frontend-simple.ps1
+start-frontend.bat
+start-frontend.ps1
+start-product-service.sh
+start-services.ps1
+start-system-simple.ps1
+start-warehouse-system.ps1
+stop-local-services.ps1
+stop-product-service.sh
+test-product-service.http
+test-product-service.sh
+
+# Deployment documentation (auto-generated)
+DEPLOYMENT_GUIDE.md
+DEPLOYMENT_SUMMARY.md
+CI-CD-SUMMARY.md
+COMPLETE_PROJECT_STATUS.md
+GETTING_STARTED.md
+MANUAL_SETUP_GUIDE.md
+PROJECT_STATUS.md
+QUICK_START.md
+README.complete.md
+
+# Auto-generated HTML files
+*.html
+!frontend/public/index.html
+!frontend/src/**/*.html
+
+# Service-specific logs with timestamps
+services/*/logs/*.txt
+services/*/logs/*.log
+
+# Root level node_modules and package-lock (deployment artifacts)
+/node_modules/
+/package-lock.json
+
+# Build artifacts that might be tracked
+*.dll
+*.exe
+*.pdb
+*.cache
+apphost.exe
+*.sourcelink.json
+ref/
+refint/
