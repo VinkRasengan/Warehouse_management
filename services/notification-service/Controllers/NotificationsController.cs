@@ -8,7 +8,7 @@ namespace NotificationService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Disabled for testing
+    // // [Authorize] // Disabled for testing // Disabled for testing
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _notificationService;
@@ -204,4 +204,5 @@ namespace NotificationService.Controllers
         public DateTime ScheduledAt { get; set; }
     }
 }
+
 

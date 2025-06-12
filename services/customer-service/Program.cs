@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "customer-service API", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "CustomerService API", Version = "v1" });
 });
 
 // Configure Entity Framework
@@ -64,7 +64,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 Console.WriteLine("=================================");
-Console.WriteLine("customer-service Started!");
+Console.WriteLine("CustomerService Started!");
 Console.WriteLine("=================================");
 Console.WriteLine("Swagger UI: http://localhost:5003/swagger");
 Console.WriteLine("Health Check: http://localhost:5003/health");

@@ -8,7 +8,7 @@ namespace PaymentService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Disabled for testing
+    // // [Authorize] // Disabled for testing // Disabled for testing
     public class PaymentsController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
@@ -152,4 +152,5 @@ namespace PaymentService.Controllers
         public string? Reason { get; set; }
     }
 }
+
 

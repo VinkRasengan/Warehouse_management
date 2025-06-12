@@ -454,7 +454,7 @@ const CustomersPage: React.FC = () => {
           <DialogTitle>Edit Customer</DialogTitle>
           <DialogContent>
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="firstName"
                   control={editForm.control}
@@ -469,7 +469,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="lastName"
                   control={editForm.control}
@@ -484,7 +484,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="email"
                   control={editForm.control}
@@ -500,7 +500,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="phone"
                   control={editForm.control}
@@ -513,7 +513,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} component="div">
                 <Controller
                   name="address"
                   control={editForm.control}
@@ -526,7 +526,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={4} component="div">
                 <Controller
                   name="city"
                   control={editForm.control}
@@ -539,7 +539,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={4} component="div">
                 <Controller
                   name="postalCode"
                   control={editForm.control}
@@ -552,7 +552,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={4} component="div">
                 <Controller
                   name="country"
                   control={editForm.control}
@@ -565,7 +565,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="customerType"
                   control={editForm.control}
@@ -582,7 +582,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="isActive"
                   control={editForm.control}

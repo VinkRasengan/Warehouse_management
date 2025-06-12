@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using payment-service.Data;
-using payment-service.Services;
+using PaymentService.Data;
+using PaymentService.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "payment-service API", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "PaymentService API", Version = "v1" });
 });
 
 // Configure Entity Framework
@@ -64,7 +64,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 Console.WriteLine("=================================");
-Console.WriteLine("payment-service Started!");
+Console.WriteLine("PaymentService Started!");
 Console.WriteLine("=================================");
 Console.WriteLine("Swagger UI: http://localhost:5004/swagger");
 Console.WriteLine("Health Check: http://localhost:5004/health");

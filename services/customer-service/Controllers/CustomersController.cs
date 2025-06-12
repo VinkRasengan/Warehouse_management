@@ -7,7 +7,7 @@ namespace CustomerService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Disabled for testing
+    // // [Authorize] // Disabled for testing // Disabled for testing
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerService _customerService;
@@ -208,4 +208,5 @@ namespace CustomerService.Controllers
         }
     }
 }
+
 

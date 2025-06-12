@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using notification-service.Data;
-using notification-service.Services;
+using NotificationService.Data;
+using NotificationService.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "notification-service API", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "NotificationService API", Version = "v1" });
 });
 
 // Configure Entity Framework
@@ -64,7 +64,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 Console.WriteLine("=================================");
-Console.WriteLine("notification-service Started!");
+Console.WriteLine("NotificationService Started!");
 Console.WriteLine("=================================");
 Console.WriteLine("Swagger UI: http://localhost:5005/swagger");
 Console.WriteLine("Health Check: http://localhost:5005/health");
