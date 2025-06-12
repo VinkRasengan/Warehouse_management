@@ -128,7 +128,7 @@ const CustomersPage: React.FC = () => {
       field: 'fullName',
       headerName: 'Full Name',
       width: 180,
-      valueGetter: (params) => `${params.row.firstName} ${params.row.lastName}`,
+      valueGetter: (params: any) => `${params.row.firstName} ${params.row.lastName}`,
     },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'phone', headerName: 'Phone', width: 130 },
@@ -215,7 +215,7 @@ const CustomersPage: React.FC = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} component="div">
               <TextField
                 fullWidth
                 label="Search Name or Email"
@@ -226,7 +226,7 @@ const CustomersPage: React.FC = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={3} component="div">
               <FormControl fullWidth>
                 <InputLabel>Customer Type</InputLabel>
                 <Select
@@ -242,7 +242,7 @@ const CustomersPage: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={3} component="div">
               <FormControl fullWidth>
                 <InputLabel>Status</InputLabel>
                 <Select
@@ -255,7 +255,7 @@ const CustomersPage: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid item xs={12} md={2} component="div">
               <Button
                 fullWidth
                 variant="outlined"
@@ -293,7 +293,7 @@ const CustomersPage: React.FC = () => {
           <DialogTitle>Add New Customer</DialogTitle>
           <DialogContent>
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="firstName"
                   control={createForm.control}
@@ -310,7 +310,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="lastName"
                   control={createForm.control}
@@ -327,7 +327,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="email"
                   control={createForm.control}
@@ -351,7 +351,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="phone"
                   control={createForm.control}
@@ -364,7 +364,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} component="div">
                 <Controller
                   name="address"
                   control={createForm.control}
@@ -377,7 +377,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={4} component="div">
                 <Controller
                   name="city"
                   control={createForm.control}
@@ -390,7 +390,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={4} component="div">
                 <Controller
                   name="postalCode"
                   control={createForm.control}
@@ -403,7 +403,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={4} component="div">
                 <Controller
                   name="country"
                   control={createForm.control}
@@ -416,7 +416,7 @@ const CustomersPage: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} component="div">
                 <Controller
                   name="customerType"
                   control={createForm.control}
